@@ -953,7 +953,7 @@ body.grey-bg {
   color: white;
   text-decoration: none;
 }
-.homepage-post .info {
+.homepage-post .readmore {
   width: 100%;
   float: left;
   margin: 0 auto;
@@ -962,7 +962,7 @@ body.grey-bg {
   padding-bottom: 40px;
   margin-bottom: 10px;
 }
-.homepage-post .info .text {
+.homepage-post .readmore .text {
   float: left;
   margin: 0 10px;
   text-decoration: none;
@@ -972,8 +972,9 @@ body.grey-bg {
   color: #232323;
   letter-spacing: 2px;
   text-transform: uppercase;
+  text-decoration: underline;
 }
-.homepage-post:last-child .info {
+.homepage-post:last-child .readmore {
   border-bottom: none;
 }
 .post {
@@ -1102,7 +1103,7 @@ body.grey-bg {
   text-transform: uppercase;
   text-decoration: none;
 }
-.related-posts .info {
+.related-posts .readmore {
   font-family: "Oswald", Arial, sans-serif;
   font-size: 12px;
   font-weight: 400;
@@ -1461,7 +1462,7 @@ form button {
   right: auto;
   z-index: 30;
 }
-.post-header .info {
+.post-header .readmore {
   float: left;
 }
 .post-header .text {
@@ -1612,7 +1613,7 @@ header.image-header .content hr {
   border-bottom: solid 2px white;
   width: 40px;
 }
-header.image-header .content .info {
+header.image-header .content .readmore {
   font-family: "Oswald", Arial, sans-serif;
   font-size: 14px;
   font-weight: 700;
@@ -1621,7 +1622,7 @@ header.image-header .content .info {
   margin: 0 auto;
   display: inline-block;
 }
-header.image-header .content .info .text {
+header.image-header .content .readmore .text {
   float: left;
   margin: 0 10px;
   text-decoration: none;
@@ -1972,7 +1973,7 @@ width:calc(100% + 30px);
   text-transform: uppercase;
   text-decoration: none;
 }
-.widget.posts li .info {
+.widget.posts li .readmore {
   margin-left: 100px;
   font-family: "Oswald", Arial, sans-serif;
   font-size: 12px;
@@ -2045,7 +2046,7 @@ width:calc(100% + 30px);
   .widget.posts li .post-title {
     font-size: 12px;
   }
-  .widget.posts li .info {
+  .widget.posts li .readmore {
     font-size: 10px;
   }
   .comments ul li .comment-no {
@@ -2190,7 +2191,7 @@ width:calc(100% + 30px);
   .related-posts .post-title {
     font-size: 10px;
   }
-  .related-posts .info {
+  .related-posts .readmore {
     font-size: 10px;
     line-height: 14px;
     margin-top: 10px;
