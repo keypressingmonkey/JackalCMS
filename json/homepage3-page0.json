@@ -1,0 +1,49 @@
+{
+    "page" : 0,
+    "items" : [
+        {
+            "image" : "content/slider07.jpg",
+            "title" : "WHEN THERE IS NO TOMORROW",
+            "link" : "post-sidebar.html",
+            "author" : "John Doe",
+            "authorLink" : "author.html",
+            "date" : "2.20.2013",
+            "dateLink" : "#",
+            "category" : "TECHNOLOGY",
+            "categoryLink" : "category.html"
+        },
+        {
+            "image" : "content/slider06.jpg",
+            "title" : "THE GREATEST TRAGEDY IS INDIFFERENCE",
+            "link" : "post-sidebar.html",
+            "author" : "John Doe",
+            "authorLink" : "author.html",
+            "date" : "2.20.2013",
+            "dateLink" : "#",
+            "category" : "TECHNOLOGY",
+            "categoryLink" : "category.html"
+        },
+        {
+            "image" : "content/slider05.jpg",
+            "title" : "LIVE IN YOUR WORLD. PLAY IN OURS",
+            "link" : "post-sidebar.html",
+            "author" : "John Doe",
+            "authorLink" : "author.html",
+            "date" : "2.20.2013",
+            "dateLink" : "#",
+            "category" : "TECHNOLOGY",
+            "categoryLink" : "category.html"
+        },
+        {
+            "image" : "content/slider04.jpg",
+            "title" : "QUALITY NEVER GOES OUT OF STYLE",
+            "link" : "post-sidebar.html",
+            "author" : "John Doe",
+            "authorLink" : "author.html",
+            "date" : "2.20.2013",
+            "dateLink" : "#",
+            "category" : "TECHNOLOGY",
+            "categoryLink" : "category.html"
+        }
+    ]
+}
