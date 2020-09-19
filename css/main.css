@@ -1029,9 +1029,11 @@ body.grey-bg {
   padding: 50px 0;
 }
 .related-posts .post {
-  width: 100%;
+  width: 33%;
   float: left;
   padding: 0;
+  padding: 10px 10px;
+
 }
 .related-posts .post:hover .overlay {
   -webkit-opacity: 1;
@@ -1102,6 +1104,19 @@ body.grey-bg {
   letter-spacing: 4px;
   text-transform: uppercase;
   text-decoration: none;
+  overflow-wrap: break-word;
+}
+.related_post-title {
+  font-family: "Oswald", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  width: 100%;
+  float: left;
+  color: #3e3e3e;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-decoration: none;
+  overflow-wrap: break-word;
 }
 .related-posts .readmore {
   font-family: "Oswald", Arial, sans-serif;
