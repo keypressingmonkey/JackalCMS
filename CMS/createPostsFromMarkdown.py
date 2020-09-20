@@ -6,6 +6,7 @@ from resizeimage import resizeimage
 import pprint
 from datetime import datetime as dt
 import random
+from shutil import copyfile
 
 current_post_title = ''
 current_post_subtitle = ''
@@ -26,19 +27,22 @@ blogroll = []
 def optimize_images():
     for root,dirs,file in os.walk(os.path.join(os.getcwd(),'images')):
         for image in file:
-            if (image.endswith('.jpg') or image.endswith('.png')) and not image.startswith('optimized_') and not image.startswith('thumb_optimized_') and not 'logo' in image and not image.startswith('related_optimized_') and not image.startswith('sidebar_optimized_') :
-                
+            if (image.endswith('.jpg') or image.endswith('.png')):
                 original_image = Image.open(os.path.join(root,image))
+                test = os.path.join(os.getcwd(),root,'backup',image)
+                if not os.path.isfile(os.path.join(os.getcwd(),root,'backup',image)):
+                    original_image.save(os.path.join(os.getcwd(),root,'backup',image))
                 img = resizeimage.resize_width(original_image, int(760), validate=False)
+                img.save(os.path.join(os.getcwd(),root,'blogroll',image),optimize=True, quality=int(80))
+                img = resizeimage.resize_width(original_image, int(760), validate=False)
+                img.save(os.path.join(os.getcwd(),root,'featured',image),optimize=True, quality=int(80)) #check exact width
                 img = resizeimage.resize_width(original_image, int(80), validate=False)
-                img.save(os.path.join(root,'thumb_optimized_'+image))
+                img.save(os.path.join(os.getcwd(),root,'thumbs',image),optimize=True, quality=int(80))
                 img = resizeimage.resize_width(original_image, int(214), validate=False)
-                img.save(os.path.join(root,'related_optimized_'+image))
+                img.save(os.path.join(os.getcwd(),root,'related',image),optimize=True, quality=int(80))
                 img = resizeimage.resize_width(original_image, int(350), validate=False)
-                img.save(os.path.join(root,'sidebar_optimized_'+image))
-                img.save(os.path.join(root,'optimized_'+image),
-                        optimize=True,
-                        quality=int(80))
+                img.save(os.path.join(os.getcwd(),root,'sidebar_large',image),optimize=True, quality=int(80))
+        break #this break makes the os.walk non recursive so we don't optimize the optimized (quid opimizos optimizadan)
 
 def convert_markdown_to_html(value):
     result = ''
@@ -326,7 +330,7 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template_file:
         for post in sorted(blogroll_without_featured,key=lambda x: x[4],reverse=True):
             post_template = '''<div class="homepage-post">
                             <figure>
-                                <img src="images/optimized_blog_loop_post_image" alt="" />
+                                <img src="images/blogroll/blog_loop_post_image" alt="" />
                                 <div class="overlay">
                                     <div class="inner">
                                         <div class="figure-text">
