@@ -53,11 +53,33 @@ def get_next_post():
                 date = dt.strptime(date,"%Y-%m-%d")
                 master_post_date = dt.strptime(current_post_date, "%Y-%m-%d")
                 if date > master_post_date:
-                    all_previous_posts.append([file,title,subtitle,image,date])
+                    all_next_posts.append([file,title,subtitle,image,date])
     if all_next_posts:
-        return min(sorted(all_next_posts, key=lambda tup: tup[4])) #this sorts by date and returns the highest, aka the previous post
+        return min(sorted(all_next_posts, key=lambda tup: tup[4])) #this sorts by date and returns the lowest with a higher date than the mainw, aka the next post
     else:
         return(['/','Homepage','','default.jpg',''])
+
+def get_fetured_post():
+    next_post_url = ''
+    next_post_title = ''
+    next_post_subtitle = ''
+    next_post_image = ''
+    all_posts = []
+
+    for file in os.listdir(os.path.join(os.getcwd(),'cms/posts')):
+        if file.endswith('.md') or file.endswith('.markdown'):
+            with open(os.path.join(root,file)) as f:
+                post_text = f.read() #this way we get to separate frontmatter from post content
+                frontmatter = re.match(r'(---)((.|\n)*?)(---)',post_text).group(2)
+                title = re.search(r'(\ntitle: ")(.*?)(")',frontmatter,re.MULTILINE).group(2)
+                subtitle = re.search(r'(\nsubtitle: ")(.*?)(")',frontmatter,re.MULTILINE).group(2)
+                image = re.search(r'(\nimage: ")(.*?)(")',frontmatter).group(2)
+                date = re.search(r'(\ndate: ")(.*?)(")',frontmatter,re.MULTILINE).group(2)
+                date = dt.strptime(date,"%Y-%m-%d")
+                all_posts.append([file,title,subtitle,image,date])
+    
+    return max(sorted(all_posts, key=lambda tup: tup[4])) #this sorts by date and returns the highest, aka the most recent post
+    
 
 
 
