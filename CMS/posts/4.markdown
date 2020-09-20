@@ -1,8 +1,8 @@
 ---
-title: "Page Title3"
+title: "Page Title4"
 subtitle: "page subtitle"
-image: "blog_loop_post_3_image.jpg"
-date: "2014-12-23"
+image: "blog_loop_post_4_image.jpg"
+date: "2014-12-24"
 ---
 # heading 2
 This is all your test content
