@@ -1,5 +1,6 @@
 ---
 title: "Page Title"
+subtitle: "page subtitle"
 image: "page1.jpg"
 date: "2014-12-21"
 ---

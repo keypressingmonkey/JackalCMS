@@ -2,6 +2,8 @@ import os
 import re
 import pprint
 
+
+
 for root, dirs, files in os.walk(os.path.join(os.getcwd(),'cms/posts')):
         for file in files:
             if file.endswith('.md') or file.endswith('.markdown'):
