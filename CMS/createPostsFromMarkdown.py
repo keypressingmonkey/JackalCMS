@@ -251,7 +251,6 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms/posts')):
                             navlinks += '<li><a href="'+link +'">'+link_name + '</a></li>'
                         template = template.replace('header_nav_bar_links',navlinks)
 
-
                         template = template.replace('website_title',website_title)
                         template = template.replace('website_subtitle',website_subtitle)
                         template = template.replace('author_bio',author_bio)
