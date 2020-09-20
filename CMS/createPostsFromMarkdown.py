@@ -1,5 +1,8 @@
 import os
 import re
+from PIL import Image
+import PIL
+from resizeimage import resizeimage
 import pprint
 from datetime import datetime as dt
 import random
@@ -19,6 +22,23 @@ instagram_profile_url = ''
 sidebar_banner_ad_code = ''
 
 blogroll = []
+
+def optimize_images():
+    for root,dirs,file in os.walk(os.path.join(os.getcwd(),'images')):
+        for image in file:
+            if (image.endswith('.jpg') or image.endswith('.png')) and not image.startswith('optimized_') and not image.startswith('thumb_optimized_') and not 'logo' in image and not image.startswith('related_optimized_') and not image.startswith('sidebar_optimized_') :
+                
+                img = Image.open(os.path.join(root,image))
+                img = resizeimage.resize_width(img, int(760), validate=False)
+                img.save(os.path.join(root,'optimized_'+image),
+                        optimize=True,
+                        quality=int(60))
+                img = resizeimage.resize_width(img, int(80), validate=False)
+                img.save(os.path.join(root,'thumb_optimized_'+image))
+                img = resizeimage.resize_width(img, int(214), validate=False)
+                img.save(os.path.join(root,'related_optimized_'+image))
+                img = resizeimage.resize_width(img, int(200), validate=False)
+                img.save(os.path.join(root,'sidebar_optimized_'+image))
 
 def convert_markdown_to_html(value):
     result = ''
@@ -306,7 +326,7 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template_file:
         for post in sorted(blogroll_without_featured,key=lambda x: x[4],reverse=True):
             post_template = '''<div class="homepage-post">
                             <figure>
-                                <img src="images/blog_loop_post_image" alt="" />
+                                <img src="images/optimized_blog_loop_post_image" alt="" />
                                 <div class="overlay">
                                     <div class="inner">
                                         <div class="figure-text">
@@ -338,3 +358,5 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template_file:
             indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
             indexPage.close
             template_file.close
+
+optimize_images()
