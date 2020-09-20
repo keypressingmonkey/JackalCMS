@@ -1,7 +1,7 @@
 ---
 author_name: "Billy The Kid"
 author_bio: "Just a regular dude with a big ass dick"
-author_image_name: "authorProfilePic.jpg"
+author_image_name: "owner.jpg"
 instagram_profile_url: "https://instagram.com/@yourname"
 sidebar_banner_ad_code: "<iframe></iframe>"
 sidebar_follow_me_url: "https://www.instagram.com/username"
