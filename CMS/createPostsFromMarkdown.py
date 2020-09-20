@@ -2,6 +2,7 @@ import os
 import re
 import pprint
 from datetime import datetime as dt
+import random
 
 current_post_title = ''
 current_post_subtitle = ''
@@ -114,6 +115,29 @@ def get_blogroll_posts():
     sorted_list = sorted(all_posts, key=lambda tup: tup[4])
     # here we sort by date and skip the highest to start the blogroll with the first nonfeatured post
     return sorted_list
+def get_related_posts(current_post_title):    
+    all_posts = []
+
+    for file in os.listdir(os.path.join(os.getcwd(), 'cms/posts')):
+        if file.endswith('.md') or file.endswith('.markdown'):
+            with open(os.path.join(root, file)) as f:
+                post_text = f.read()  # this way we get to separate frontmatter from post content
+                frontmatter = re.match(
+                    r'(---)((.|\n)*?)(---)', post_text).group(2)
+                content = re.sub(
+                    r'(---)((.|\n)*?)(---)', '', post_text).lstrip('\n')
+                title = re.search(r'(\ntitle: ")(.*?)(")',
+                                  frontmatter, re.MULTILINE).group(2)
+                subtitle = re.search(
+                    r'(\nsubtitle: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
+                image = re.search(r'(\nimage: ")(.*?)(")',
+                                  frontmatter).group(2)
+                date = re.search(r'(\ndate: ")(.*?)(")',
+                                 frontmatter, re.MULTILINE).group(2)
+                date = dt.strptime(date, "%Y-%m-%d")
+                if not title == current_post_title:
+                    all_posts.append(['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date,content])    
+    return random.sample(all_posts,3)
 
 #main
     
@@ -160,7 +184,10 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms/posts')):
                 next_post_image = next_post[3]
                 next_post_date = next_post[4]
 
+                #related posts 
+
                 with open(os.path.join(os.path.join(os.getcwd(), 'posts/post.html')), 'r') as template:
+                    related_posts = get_related_posts(current_post_title)                
                     template = template.read()
                     template = template.replace(
                         'post_title', current_post_title)
@@ -173,6 +200,19 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms/posts')):
                     template = template.replace('next_post_url', next_post_url)
                     template = template.replace(
                         'post_content', current_post_content)
+                    
+                    template = template.replace('blog_post_related_post_1_url', related_posts[0][0])
+                    template = template.replace('blog_post_related_post_1_title', related_posts[0][1])
+                    template = template.replace('blog_post_related_post_1_subtitle', related_posts[0][2])
+                    template = template.replace('blog_post_related_post_1_image', related_posts[0][3])
+                    template = template.replace('blog_post_related_post_2_url', related_posts[1][0])
+                    template = template.replace('blog_post_related_post_2_title', related_posts[1][1])
+                    template = template.replace('blog_post_related_post_2_subtitle', related_posts[1][2])
+                    template = template.replace('blog_post_related_post_2_image', related_posts[1][3])
+                    template = template.replace('blog_post_related_post_3_url', related_posts[2][0])
+                    template = template.replace('blog_post_related_post_3_title', related_posts[2][1])
+                    template = template.replace('blog_post_related_post_3_subtitle', related_posts[2][2])
+                    template = template.replace('blog_post_related_post_3_image', related_posts[2][3])
 
                     newPostFileName = current_post_title.replace(
                         '.md', '.html').replace('.markdown', '.html').replace(' ', '_')
