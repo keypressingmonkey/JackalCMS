@@ -957,7 +957,8 @@ body.grey-bg {
   width: 100%;
   float: left;
   margin: 0 auto;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
   border-bottom: solid 1px #f6f6f6;
   padding-bottom: 40px;
   margin-bottom: 10px;

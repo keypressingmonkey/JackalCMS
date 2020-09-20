@@ -4,6 +4,7 @@ subtitle: "page subtitle"
 image: "blog_loop_post_4_image.jpg"
 date: "2014-12-24"
 ---
+beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. 
 # heading 2
 This is all your test content
 # heading 2

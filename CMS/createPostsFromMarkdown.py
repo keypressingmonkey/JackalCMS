@@ -20,6 +20,16 @@ sidebar_banner_ad_code = ''
 
 blogroll = []
 
+def convert_markdown_to_html(value):
+    value = re.sub(r'(### )(.*?)($|\n)', r'<h4>\2</h4>\n', value)
+    value = re.sub(r'(## )(.*?)($|\n)', r'<h3>\2</h3>\n', value)
+    value = re.sub(r'(# )(.*?)($|\n)', r'<h2>\2</h2>\n', value)
+    value = re.sub(r'!\[(.*?)\]\((.*?)\)', r'<img src="\2" alt="\1" />', value)
+    value = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', value)
+    value = re.sub(r'(\n)(.*?)($|\n)', r'\n<p>\2</p>\n', value)
+    return str(value)
+    
+
 
 def get_previous_post():
     all_previous_posts = []
@@ -97,6 +107,8 @@ def get_blogroll_posts():
                     r'(---)((.|\n)*?)(---)', post_text).group(2)
                 content = re.sub(
                     r'(---)((.|\n)*?)(---)', '', post_text).lstrip('\n')
+                teaser = re.match(
+                    r'((.|\n)*?)#', content).group(1).lstrip('\n')
                 title = re.search(r'(\ntitle: ")(.*?)(")',
                                   frontmatter, re.MULTILINE).group(2)
                 subtitle = re.search(
@@ -106,7 +118,7 @@ def get_blogroll_posts():
                 date = re.search(r'(\ndate: ")(.*?)(")',
                                  frontmatter, re.MULTILINE).group(2)
                 date = dt.strptime(date, "%Y-%m-%d")
-                all_posts.append(['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date,content])
+                all_posts.append(['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date,content,teaser])
 
     sorted_list = sorted(all_posts, key=lambda tup: tup[4])
     # here we sort by date and skip the highest to start the blogroll with the first nonfeatured post
@@ -155,18 +167,8 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms/posts')):
                 current_post_date = re.search(
                     r'(\ndate: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
                 # todo order is important here, better fix this
-                current_post_content = re.sub(
-                    r'(### )(.*?)($|\n)', r'<h4>\2</h4>\n', current_post_content)
-                current_post_content = re.sub(
-                    r'(## )(.*?)($|\n)', r'<h3>\2</h3>\n', current_post_content)
-                current_post_content = re.sub(
-                    r'(# )(.*?)($|\n)', r'<h2>\2</h2>\n', current_post_content)
-                current_post_content = re.sub(
-                    r'!\[(.*?)\]\((.*?)\)', r'<img src="\2" alt="\1" />', current_post_content)
-                current_post_content = re.sub(
-                    r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', current_post_content)
-                current_post_content = re.sub(
-                    r'(\n)(.*?)($|\n)', r'\n<p>\2</p>\n', current_post_content)
+                current_post_content = convert_markdown_to_html(current_post_content)
+              
                 previous_post = get_previous_post()
                 previous_post_url = previous_post[0]
                 previous_post_title = previous_post[1]
@@ -204,13 +206,26 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms/posts')):
                         author_name = list(filter(lambda line: line.startswith('author_name'),config))[0].replace('author_name: "','').replace('"','').replace('\n','')
                         author_bio = list(filter(lambda line: line.startswith('author_bio'),config))[0].replace('author_bio: "','').replace('"','').replace('\n','')
                         author_image_name = list(filter(lambda line: line.startswith('author_image_name'),config))[0].replace('author_image_name: "','').replace('"','').replace('\n','')
+                        website_logo_white = list(filter(lambda line: line.startswith('website_logo_white'),config))[0].replace('website_logo_white: "','').replace('"','').replace('\n','')
+                        website_logo_dark = list(filter(lambda line: line.startswith('website_logo_dark'),config))[0].replace('website_logo_dark: "','').replace('"','').replace('\n','')
                         instagram_profile_url = list(filter(lambda line: line.startswith('instagram_profile_url'),config))[0].replace('instagram_profile_url: "','').replace('"','').replace('\n','')
                         sidebar_banner_ad_code = list(filter(lambda line: line.startswith('sidebar_banner_ad_code'),config))[0].replace('sidebar_banner_ad_code: "','').replace('"','').replace('\n','')
+                        header_nav_bar_links = list(filter(lambda line: line.startswith('header_nav_bar_links'),config))[0].replace('header_nav_bar_links: "','').replace('"','').replace('\n','').split(',')
+                        navlinks = ''
+                        for header_nav_bar_link in header_nav_bar_links:
+                            link = header_nav_bar_link.split('(')[0]
+                            link_name = header_nav_bar_link.split('(')[1].replace(')','')
+                            navlinks += '<li><a href="'+link +'">'+link_name + '</a></li>'
+                        template = template.replace('header_nav_bar_links',navlinks)
+
+
                         template = template.replace('website_title',website_title)
                         template = template.replace('website_subtitle',website_subtitle)
                         template = template.replace('author_name',author_name)
                         template = template.replace('author_bio',author_bio)
                         template = template.replace('author_image_name',author_image_name)
+                        template = template.replace('website_logo_white',website_logo_white)
+                        template = template.replace('website_logo_dark',website_logo_dark)
                         template = template.replace('instagram_profile_url',instagram_profile_url)
                         template = template.replace('sidebar_banner_ad_code',sidebar_banner_ad_code)
                     template = template.replace('blog_post_related_post_1_url', related_posts[0][0])
@@ -242,10 +257,19 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template_file:
         author_name = list(filter(lambda line: line.startswith('author_name'),config))[0].replace('author_name: "','').replace('"','').replace('\n','')
         author_bio = list(filter(lambda line: line.startswith('author_bio'),config))[0].replace('author_bio: "','').replace('"','').replace('\n','')
         author_image_name = list(filter(lambda line: line.startswith('author_image_name'),config))[0].replace('author_image_name: "','').replace('"','').replace('\n','')
+        website_logo_white = list(filter(lambda line: line.startswith('website_logo_white'),config))[0].replace('website_logo_white: "','').replace('"','').replace('\n','')
+        website_logo_dark = list(filter(lambda line: line.startswith('website_logo_dark'),config))[0].replace('website_logo_dark: "','').replace('"','').replace('\n','')
         instagram_profile_url = list(filter(lambda line: line.startswith('instagram_profile_url'),config))[0].replace('instagram_profile_url: "','').replace('"','').replace('\n','')
         sidebar_banner_ad_code = list(filter(lambda line: line.startswith('sidebar_banner_ad_code'),config))[0].replace('sidebar_banner_ad_code: "','').replace('"','').replace('\n','')
         frontpage_teaser_length = list(filter(lambda line: line.startswith('frontpage_teaser_length'),config))[0].replace('frontpage_teaser_length: "','').replace('"','').replace('\n','')
         frontpage_featured_teaser_length = list(filter(lambda line: line.startswith('frontpage_featured_teaser_length'),config))[0].replace('frontpage_featured_teaser_length: "','').replace('"','').replace('\n','')
+        header_nav_bar_links = list(filter(lambda line: line.startswith('header_nav_bar_links'),config))[0].replace('header_nav_bar_links: "','').replace('"','').replace('\n','').split(',')
+        navlinks = ''
+        for header_nav_bar_link in header_nav_bar_links:
+            link = header_nav_bar_link.split('(')[0]
+            link_name = header_nav_bar_link.split('(')[1].replace(')','')
+            navlinks += '<li><a href="'+link +'">'+link_name + '</a></li>'
+        template = template.replace('header_nav_bar_links',navlinks)
         blogroll = get_blogroll_posts()
         blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
         template = template.replace('sidebar_recent_post_1_url', blogroll[0][0])
@@ -287,16 +311,11 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template_file:
                                     </div>
                                 </div>
                             </figure>
-                            <p>
-                                blog_loop_post_teaser_text
-                            </p>
-                            <div class="readmore">
-                                <a href="blog_loop_post_url" class="text">
-                                    Read More
-                                </a>
-                            </div>
+                            <p>blog_loop_post_teaser_text</p>
+                            <div class="readmore"><a href="blog_loop_post_url" class="text">Read More</a></div>
+                            
                         </div>
-'''.replace('blog_loop_post_url',post[0]).replace('blog_loop_post_title',post[1]).replace('blog_loop_post_subtitle',post[2]).replace('blog_loop_post_image',post[3]).replace('blog_loop_post_teaser_text',post[5][0:int(frontpage_teaser_length)])
+'''.replace('blog_loop_post_url',post[0]).replace('blog_loop_post_title',post[1]).replace('blog_loop_post_subtitle',post[2]).replace('blog_loop_post_image',post[3]).replace('blog_loop_post_teaser_text',convert_markdown_to_html(post[6][0:int(frontpage_teaser_length)]+'......'))
             blogroll_html += post_template
         template = template.replace('blog_roll', blogroll_html)
         template = template.replace('website_title',website_title)
@@ -304,6 +323,8 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template_file:
         template = template.replace('author_name',author_name)
         template = template.replace('author_bio',author_bio)
         template = template.replace('author_image_name',author_image_name)
+        template = template.replace('website_logo_white',website_logo_white)
+        template = template.replace('website_logo_dark',website_logo_dark)
         template = template.replace('instagram_profile_url',instagram_profile_url)
         template = template.replace('sidebar_banner_ad_code',sidebar_banner_ad_code)
         with open(os.path.join(os.getcwd(), 'index.html'), 'w') as indexPage:
