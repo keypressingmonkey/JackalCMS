@@ -59,7 +59,7 @@ def get_next_post():
     else:
         return(['/','Homepage','','default.jpg',''])
 
-def get_fetured_post():
+def get_featured_post():
     next_post_url = ''
     next_post_title = ''
     next_post_subtitle = ''
@@ -79,6 +79,28 @@ def get_fetured_post():
                 all_posts.append([file,title,subtitle,image,date])
     
     return max(sorted(all_posts, key=lambda tup: tup[4])) #this sorts by date and returns the highest, aka the most recent post
+    
+def get_blogroll_posts():
+    next_post_url = ''
+    next_post_title = ''
+    next_post_subtitle = ''
+    next_post_image = ''
+    all_posts = []
+
+    for file in os.listdir(os.path.join(os.getcwd(),'cms/posts')):
+        if file.endswith('.md') or file.endswith('.markdown'):
+            with open(os.path.join(root,file)) as f:
+                post_text = f.read() #this way we get to separate frontmatter from post content
+                frontmatter = re.match(r'(---)((.|\n)*?)(---)',post_text).group(2)
+                title = re.search(r'(\ntitle: ")(.*?)(")',frontmatter,re.MULTILINE).group(2)
+                subtitle = re.search(r'(\nsubtitle: ")(.*?)(")',frontmatter,re.MULTILINE).group(2)
+                image = re.search(r'(\nimage: ")(.*?)(")',frontmatter).group(2)
+                date = re.search(r'(\ndate: ")(.*?)(")',frontmatter,re.MULTILINE).group(2)
+                date = dt.strptime(date,"%Y-%m-%d")
+                all_posts.append([file,title,subtitle,image,date])
+    
+    sorted_list = sorted(all_posts, key=lambda tup: tup[4])
+    return sorted_list[len(all_posts)-2] #here we sort by date and skip the highest to start the blogroll with the first nonfeatured post
     
 
 
@@ -113,3 +135,10 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(),'cms/posts')):
                     next_post_subtitle = next_post[2]
                     next_post_image = next_post[3]
                     next_post_date = next_post[4]
+
+                    with open(os.path.join(os.path.join(os.getcwd(),'posts/post.html')),'r') as f:
+                        template = f.read()
+                        newPostFileName = current_post_title.replace('.md','.html').replace('.markdown','.html').replace(' ','_')
+                        with open(os.path.join(os.getcwd(),'posts',newPostFileName+'.html'),'w') as newpost:
+                            newpost.write(template)
+                            newpost.close
