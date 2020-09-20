@@ -189,14 +189,30 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms/posts')):
                         'post_title', current_post_title)
                     template = template.replace(
                         'post_subtitle', current_post_subtitle)
-                    template = template.replace(
-                        'site_name', 'site_name')  # todo pull from config
+                    
                     template = template.replace(
                         'previous_post_url', previous_post_url)
                     template = template.replace('next_post_url', next_post_url)
                     template = template.replace(
                         'post_content', current_post_content)
-                    
+                    with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
+                        config = config.readlines()                        
+                        sidebar_follow_me_url = list(filter(lambda line: line.startswith('sidebar_follow_me_url'),config))[0].replace('sidebar_follow_me_url: "','').replace('"','').replace('\n','')
+                        template = template.replace('sidebar_follow_me_url',sidebar_follow_me_url)
+                        website_title = list(filter(lambda line: line.startswith('website_title'),config))[0].replace('website_title: "','').replace('"','').replace('\n','')
+                        website_subtitle = list(filter(lambda line: line.startswith('website_subtitle'),config))[0].replace('website_subtitle: "','').replace('"','').replace('\n','')
+                        author_name = list(filter(lambda line: line.startswith('author_name'),config))[0].replace('author_name: "','').replace('"','').replace('\n','')
+                        author_bio = list(filter(lambda line: line.startswith('author_bio'),config))[0].replace('author_bio: "','').replace('"','').replace('\n','')
+                        author_image_name = list(filter(lambda line: line.startswith('author_image_name'),config))[0].replace('author_image_name: "','').replace('"','').replace('\n','')
+                        instagram_profile_url = list(filter(lambda line: line.startswith('instagram_profile_url'),config))[0].replace('instagram_profile_url: "','').replace('"','').replace('\n','')
+                        sidebar_banner_ad_code = list(filter(lambda line: line.startswith('sidebar_banner_ad_code'),config))[0].replace('sidebar_banner_ad_code: "','').replace('"','').replace('\n','')
+                        template = template.replace('website_title',website_title)
+                        template = template.replace('website_subtitle',website_subtitle)
+                        template = template.replace('author_name',author_name)
+                        template = template.replace('author_bio',author_bio)
+                        template = template.replace('author_image_name',author_image_name)
+                        template = template.replace('instagram_profile_url',instagram_profile_url)
+                        template = template.replace('sidebar_banner_ad_code',sidebar_banner_ad_code)
                     template = template.replace('blog_post_related_post_1_url', related_posts[0][0])
                     template = template.replace('blog_post_related_post_1_title', related_posts[0][1])
                     template = template.replace('blog_post_related_post_1_subtitle', related_posts[0][2])
@@ -209,7 +225,6 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms/posts')):
                     template = template.replace('blog_post_related_post_3_title', related_posts[2][1])
                     template = template.replace('blog_post_related_post_3_subtitle', related_posts[2][2])
                     template = template.replace('blog_post_related_post_3_image', related_posts[2][3])
-
                     newPostFileName = current_post_title.replace(
                         '.md', '.html').replace('.markdown', '.html').replace(' ', '_')
                     with open(os.path.join(os.getcwd(), 'posts', newPostFileName+'.html'), 'w') as newpost:
