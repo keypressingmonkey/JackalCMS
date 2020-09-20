@@ -195,6 +195,7 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template:
         frontpage_teaser_length = list(filter(lambda line: line.startswith('frontpage_teaser_length'),config))[0].replace('frontpage_teaser_length: "','').replace('"','').replace('\n','')
         frontpage_featured_teaser_length = list(filter(lambda line: line.startswith('frontpage_featured_teaser_length'),config))[0].replace('frontpage_featured_teaser_length: "','').replace('"','').replace('\n','')
         blogroll = get_blogroll_posts()
+        blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
         template = template.replace('sidebar_recent_post_1_url', blogroll[0][0])
         template = template.replace('sidebar_recent_post_1_title', blogroll[0][1])
         template = template.replace('sidebar_recent_post_1_image', blogroll[0][3])
@@ -211,11 +212,11 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template:
             template = template.replace('sidebar_recent_post_4_title', blogroll[3][1])
             template = template.replace('sidebar_recent_post_4_image', blogroll[3][3]) 
         
-        template = template.replace('featured_post_1_url', blogroll[len(blogroll)-1][0])
-        template = template.replace('featured_post_1_title', blogroll[len(blogroll)-1][1])
-        template = template.replace('featured_post_1_subtitle', blogroll[len(blogroll)-1][2])
-        template = template.replace('featured_post_1_image',blogroll[len(blogroll)-1][3])
-        template = template.replace('featured_post_1_teaser_text',blogroll[len(blogroll)-1][5][:int(frontpage_featured_teaser_length)])
+        template = template.replace('featured_post_1_url', blogroll[0][0])
+        template = template.replace('featured_post_1_title', blogroll[0][1])
+        template = template.replace('featured_post_1_subtitle', blogroll[0][2])
+        template = template.replace('featured_post_1_image',blogroll[0][3])
+        template = template.replace('featured_post_1_teaser_text',blogroll[0][5][:int(frontpage_featured_teaser_length)])
 
         blogroll_without_featured = sorted(blogroll,key=lambda x: x[4])[0:len(blogroll)-1]
         blogroll_html = ''
