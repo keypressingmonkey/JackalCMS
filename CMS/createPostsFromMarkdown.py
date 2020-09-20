@@ -45,7 +45,7 @@ def get_previous_post():
                 master_post_date = dt.strptime(current_post_date, "%Y-%m-%d")
                 if date < master_post_date:
                     all_previous_posts.append(
-                        [file, title, subtitle, image, date])
+                        ['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date])
     if all_previous_posts:
         # this sorts by date and returns the highest, aka the previous post
         return max(sorted(all_previous_posts, key=lambda tup: tup[4]))
@@ -77,7 +77,7 @@ def get_next_post():
                 date = dt.strptime(date, "%Y-%m-%d")
                 master_post_date = dt.strptime(current_post_date, "%Y-%m-%d")
                 if date > master_post_date:
-                    all_next_posts.append([file, title, subtitle, image, date])
+                    all_next_posts.append(['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date])
     if all_next_posts:
         # this sorts by date and returns the lowest with a higher date than the mainw, aka the next post
         return min(sorted(all_next_posts, key=lambda tup: tup[4]))
@@ -98,6 +98,8 @@ def get_blogroll_posts():
                 post_text = f.read()  # this way we get to separate frontmatter from post content
                 frontmatter = re.match(
                     r'(---)((.|\n)*?)(---)', post_text).group(2)
+                content = re.sub(
+                    r'(---)((.|\n)*?)(---)', '', post_text).lstrip('\n')
                 title = re.search(r'(\ntitle: ")(.*?)(")',
                                   frontmatter, re.MULTILINE).group(2)
                 subtitle = re.search(
@@ -107,7 +109,7 @@ def get_blogroll_posts():
                 date = re.search(r'(\ndate: ")(.*?)(")',
                                  frontmatter, re.MULTILINE).group(2)
                 date = dt.strptime(date, "%Y-%m-%d")
-                all_posts.append([file, title, subtitle, image, date])
+                all_posts.append(['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date,content])
 
     sorted_list = sorted(all_posts, key=lambda tup: tup[4])
     # here we sort by date and skip the highest to start the blogroll with the first nonfeatured post
@@ -190,12 +192,14 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template:
         author_image_name = list(filter(lambda line: line.startswith('author_image_name'),config))[0].replace('author_image_name: "','').replace('"','').replace('\n','')
         instagram_profile_url = list(filter(lambda line: line.startswith('instagram_profile_url'),config))[0].replace('instagram_profile_url: "','').replace('"','').replace('\n','')
         sidebar_banner_ad_code = list(filter(lambda line: line.startswith('sidebar_banner_ad_code'),config))[0].replace('sidebar_banner_ad_code: "','').replace('"','').replace('\n','')
+        frontpage_teaser_length = list(filter(lambda line: line.startswith('frontpage_teaser_length'),config))[0].replace('frontpage_teaser_length: "','').replace('"','').replace('\n','')
+        frontpage_featured_teaser_length = list(filter(lambda line: line.startswith('frontpage_featured_teaser_length'),config))[0].replace('frontpage_featured_teaser_length: "','').replace('"','').replace('\n','')
         blogroll = get_blogroll_posts()
         template = template.replace('sidebar_recent_post_1_url', blogroll[0][0])
         template = template.replace('sidebar_recent_post_1_title', blogroll[0][1])
         template = template.replace('sidebar_recent_post_1_image', blogroll[0][3])
         if len(blogroll)>1:
-            template = template.replace('sidebar_recent_post_2_url', blogroll[1][0])
+            template = template.replace('sidebar_recent_post_2_url', blogroll[1][1])
             template = template.replace('sidebar_recent_post_2_title', blogroll[1][1])
             template = template.replace('sidebar_recent_post_2_image', blogroll[1][3])
         if len(blogroll)>2:
@@ -206,9 +210,42 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template:
             template = template.replace('sidebar_recent_post_4_url', blogroll[3][0])
             template = template.replace('sidebar_recent_post_4_title', blogroll[3][1])
             template = template.replace('sidebar_recent_post_4_image', blogroll[3][3]) 
+        
+        template = template.replace('featured_post_1_url', blogroll[len(blogroll)-1][0])
+        template = template.replace('featured_post_1_title', blogroll[len(blogroll)-1][1])
+        template = template.replace('featured_post_1_subtitle', blogroll[len(blogroll)-1][2])
+        template = template.replace('featured_post_1_image',blogroll[len(blogroll)-1][3])
+        template = template.replace('featured_post_1_teaser_text',blogroll[len(blogroll)-1][5][:int(frontpage_featured_teaser_length)])
 
-
-
+        blogroll_without_featured = sorted(blogroll,key=lambda x: x[4])[0:len(blogroll)-1]
+        blogroll_html = ''
+        for post in sorted(blogroll_without_featured,key=lambda x: x[4],reverse=True):
+            post_template = '''<div class="homepage-post">
+                            <figure>
+                                <img src="images/blog_loop_post_image" alt="" />
+                                <div class="overlay">
+                                    <div class="inner">
+                                        <div class="figure-text">
+                                            <!-- todo the page break here is not automatic, title has a br tag in the middle. Need to figure this out (with css?) -->
+                                            <h3><a href="blog_loop_post_url">blog_loop_post_title</a></h3>
+                                            <hr class="hidden-xs" />
+                                            <h5 class="hidden-xs">blog_loop_post_subtitle</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </figure>
+                            <p>
+                                blog_loop_post_teaser_text
+                            </p>
+                            <div class="readmore">
+                                <a href="blog_loop_post_url" class="text">
+                                    Read More
+                                </a>
+                            </div>
+                        </div>
+'''.replace('blog_loop_post_url',post[0]).replace('blog_loop_post_title',post[1]).replace('blog_loop_post_subtitle',post[2]).replace('blog_loop_post_image',post[3]).replace('blog_loop_post_teaser_text',post[5][0:int(frontpage_teaser_length)])
+            blogroll_html += post_template
+        template = template.replace('blog_roll', blogroll_html)
         template = template.replace('website_title',website_title)
         template = template.replace('website_subtitle',website_subtitle)
         template = template.replace('author_name',author_name)
@@ -217,5 +254,5 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template:
         template = template.replace('instagram_profile_url',instagram_profile_url)
         template = template.replace('sidebar_banner_ad_code',sidebar_banner_ad_code)
         with open(os.path.join(os.getcwd(), 'index.html'), 'w') as indexPage:
-            indexPage.write(template)
+            indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
             indexPage.close
