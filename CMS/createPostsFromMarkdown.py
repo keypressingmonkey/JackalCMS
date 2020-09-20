@@ -138,6 +138,14 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(),'cms/posts')):
 
                     with open(os.path.join(os.path.join(os.getcwd(),'posts/post.html')),'r') as f:
                         template = f.read()
+                        template = template.replace('post_title',current_post_title)
+                        template = template.replace('post_subtitle',current_post_subtitle)
+                        template = template.replace('site_name','site_name') #todo pull from config
+                        template = template.replace('previous_post_url',previous_post_url) 
+                        template = template.replace('next_post_url',next_post_url) 
+                        template = template.replace('post_content',current_post_content) 
+
+
                         newPostFileName = current_post_title.replace('.md','.html').replace('.markdown','.html').replace(' ','_')
                         with open(os.path.join(os.getcwd(),'posts',newPostFileName+'.html'),'w') as newpost:
                             newpost.write(template)
