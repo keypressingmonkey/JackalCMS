@@ -42,6 +42,8 @@ def optimize_images():
                 img.save(os.path.join(os.getcwd(),root,'related',image),optimize=True, quality=int(80))
                 img = resizeimage.resize_width(original_image, int(350), validate=False)
                 img.save(os.path.join(os.getcwd(),root,'sidebar_large',image),optimize=True, quality=int(80))
+                img = resizeimage.resize_width(original_image, int(130), validate=False)
+                img.save(os.path.join(os.getcwd(),root,'130px',image),optimize=True, quality=int(80))
         break #this break makes the os.walk non recursive so we don't optimize the optimized (quid opimizos optimizadan)
 
 def convert_markdown_to_html(value):
