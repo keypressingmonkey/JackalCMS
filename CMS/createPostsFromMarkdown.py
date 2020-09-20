@@ -21,13 +21,20 @@ sidebar_banner_ad_code = ''
 blogroll = []
 
 def convert_markdown_to_html(value):
-    value = re.sub(r'(### )(.*?)($|\n)', r'<h4>\2</h4>\n', value)
-    value = re.sub(r'(## )(.*?)($|\n)', r'<h3>\2</h3>\n', value)
-    value = re.sub(r'(# )(.*?)($|\n)', r'<h2>\2</h2>\n', value)
-    value = re.sub(r'!\[(.*?)\]\((.*?)\)', r'<img src="\2" alt="\1" />', value)
-    value = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', value)
-    value = re.sub(r'(\n)(.*?)($|\n)', r'\n<p>\2</p>\n', value)
-    return str(value)
+    result = ''
+    for line in value.split('\n'):
+        line = re.sub(r'(### )(.*?)($|\n)', r'<h4>\2</h4>\n', line)
+        line = re.sub(r'(## )(.*?)($|\n)', r'<h3>\2</h3>\n', line)
+        line = re.sub(r'(# )(.*?)($|\n)', r'<h2>\2</h2>\n', line)
+        line = re.sub(r'!\[(.*?)\]\((.*?)\)', r'<img src="\2" alt="\1" />', line)
+        line = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', line)
+        # line = re.sub(r'(\n)(.*?)($|\n)', r'\n<p>\2</p>\n', line)
+        if not line.startswith('<'):
+            line = re.sub(r'(^)(.*?)($|\n)', r'<p>\2</p>\n', line)
+        # if not '<' in line:
+        #     line = '<p>'+line+ '</p>'
+        result += line
+    return result
     
 
 

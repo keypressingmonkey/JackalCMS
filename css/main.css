@@ -11,6 +11,14 @@ body {
   height: 100%;
   position: relative;
 }
+h2 {
+  text-transform: capitalize;
+  font-family: "Oswald", Arial, sans-serif;
+}
+h3 {  
+  text-transform: capitalize;
+  font-family: "Oswald", Arial, sans-serif;
+}
 body.body-overflow {
 }
 body.grey-bg {
@@ -222,7 +230,6 @@ body.grey-bg {
 }
 .homepage-articles article h2 a {
   color: white;
-  text-decoration: none;
   -webkit-transition: all .3s ease-in-out;
   transition: all .3s ease-in-out;
 }
@@ -369,7 +376,6 @@ body.grey-bg {
 }
 .normal-slider article h2 a {
   color: white;
-  text-decoration: none;
   -webkit-transition: all .3s ease-in-out;
   transition: all .3s ease-in-out;
 }
@@ -604,7 +610,6 @@ body.grey-bg {
 }
 .full-homepage .main-slider article h2 a {
   color: white;
-  text-decoration: none;
 }
 .full-homepage .main-slider article p {
   width: 50%;
