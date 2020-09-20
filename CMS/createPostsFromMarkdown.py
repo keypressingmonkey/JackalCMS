@@ -22,10 +22,6 @@ blogroll = []
 
 
 def get_previous_post():
-    previous_post_url = ''
-    previous_post_title = ''
-    previous_post_subtitle = ''
-    previous_post_image = ''
     all_previous_posts = []
 
     for file in os.listdir(os.path.join(os.getcwd(), 'cms/posts')):
@@ -186,9 +182,9 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms/posts')):
 
                 #related posts 
 
-                with open(os.path.join(os.path.join(os.getcwd(), 'posts/post.html')), 'r') as template:
+                with open(os.path.join(os.path.join(os.getcwd(), 'posts/post-sidebar.html')), 'r') as template_file:
                     related_posts = get_related_posts(current_post_title)                
-                    template = template.read()
+                    template = template_file.read()
                     template = template.replace(
                         'post_title', current_post_title)
                     template = template.replace(
@@ -219,9 +215,10 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms/posts')):
                     with open(os.path.join(os.getcwd(), 'posts', newPostFileName+'.html'), 'w') as newpost:
                         newpost.write(template)
                         newpost.close
+                        template_file.close                        
 #todo fill index.html with posts
-with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template:
-    template = template.read()
+with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template_file:
+    template = template_file.read()
     with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
         config = config.readlines()
         
@@ -237,7 +234,7 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template:
         blogroll = get_blogroll_posts()
         blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
         template = template.replace('sidebar_recent_post_1_url', blogroll[0][0])
-        template = template.replace('sidebar_recent_post_1_title', blogroll[0][1])
+        template = template.replace('sidebar_recent_post_1_title', blogroll[0][1]) 
         template = template.replace('sidebar_recent_post_1_image', blogroll[0][3])
         if len(blogroll)>1:
             template = template.replace('sidebar_recent_post_2_url', blogroll[1][1])
@@ -297,3 +294,4 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template:
         with open(os.path.join(os.getcwd(), 'index.html'), 'w') as indexPage:
             indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
             indexPage.close
+            template_file.close

@@ -2,14 +2,11 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!-->
-<html class="no-js">
-<!--<![endif]-->
-
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Arwyn - Post full width</title>
+    <title>Arwyn - Post with sidebar</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="../images/favicon.png">
@@ -19,7 +16,6 @@
     <link rel="stylesheet" href="../css/main.css">
 
 </head>
-
 <body class="single">
     <nav class="st-menu st-effect-1" id="menu-1">
         <button class="close-side-menu"><i class="icon-close"></i></button>
@@ -27,17 +23,17 @@
             <li class="active">
                 <a href="homepage.hmtl">Homepage</a>
                 <ul>
-                    <a href="/">
-                        <li><a href="index.html">Homepage</a></li>
-                    </a>
+                    <li><a href="index.html">Homepage 1</a></li>
+                    <li><a href="homepage2.html">Homepage 2</a></li>
+                    <li><a href="homepage3.html">Homepage 3</a></li>
                 </ul>
             </li>
             <li><a href="headers.html">Headers</a></li>
             <li>
                 <a href="#">Post Types</a>
                 <ul>
-                    <li><a href="/posts/post.html">Post Without Sidebar</a></li>
-                    <li><a href="/posts/post-sidebar.html">Post With Sidebar</a></li>
+                    <li><a href="post.html">Post without sidebar</a></li>
+                    <li><a href="/posts/post-sidebar.html">Post with sidebar</a></li>
                 </ul>
             </li>
             <li><a href="features.html">Features</a></li>
@@ -55,14 +51,14 @@
                 <div class="col-sm-12">
                     <a href="#">
                         <figure>
-                            <img src="../images/logo.png" alt="" />
+                            <a href="/"><img src="../images/logo.png" alt=""/></a>
                         </figure>
                     </a>
                     <a href="#" class="description">site_name</a>
                     <div class="content">
                         <h1>Page Title2</h1>
                         <h4>page subtitle</h4>
-                        <hr />
+                        <hr/>
                     </div>
                 </div>
             </div>
@@ -71,20 +67,21 @@
     <main role="main" id="post-container" class="text-editor white-bg">
         <div class="container">
             <div class="row">
-                <div class="col-sm-12 col-md-8 col-md-offset-2">
+                <div class="col-sm-8">
                     <div class="left-container">
                         <div class="post-header">
                             <div class="post-header-border">
                                 <div class="navigation">
-                                    <a href="posts/Page_Title.html">
+                                    <a href="../posts/Page_Title.html">
                                         <i class="icon-angle-left"></i>
                                         <span class="text">Previous</span>
                                     </a>
-                                    <a href="posts/Page_Title3.html">
+                                    <a href="../posts/Page_Title3.html">
                                         <span class="text">Next</span>
                                         <i class="icon-angle-right"></i>
                                     </a>
                                 </div>
+                                
                             </div>
                         </div>
                         <div class="post top-padded">
@@ -104,137 +101,215 @@
                                 <a href="#">Cool stuff</a>
                             </div> -->
                         </div>
-                        <div class="post-section">
-                            Related news
-                        </div>
-                        <div class="related-posts">
-
-                            <div class="post">
-                                <figure>
-                                    <img src="../images/blog_loop_post_4_image.jpg" alt="" />
-                                    <a href="blog_post_related_1_url" class="overlay">
-                                        <div class="inner">
-                                            <i class="icon-plus"></i>
+                        <div class="post-sidebar-padding">
+                            <div class="post-section">
+                                <div class="related-posts">
+                                        <div class="post">
+                                            <figure>
+                                                <img src="../images/blog_loop_post_1_image.jpg.jpg" alt=""/>
+                                                <a href="posts/Page_Title.html" class="overlay">
+                                                    <div class="inner">
+                                                        <i class="icon-plus"></i>
+                                                    </div>
+                                                    <div class="background"></div>
+                                                </a>
+                                            </figure>
+                                            <a href="posts/Page_Title.html" class="post-title">Page Title</a>
+                                            <span class="related_post-title">page subtitle</span>
                                         </div>
-                                        <div class="background"></div>
-                                    </a>
-                                </figure>
-                                <a href="blog_post_related_1_url" class="post-title">Page Title4</a>
-                                <span class="info">page subtitle</span>
-                            </div>
-                            <div class="post">
-                                <figure>
-                                    <img src="../images/blog_loop_post_1_image.jpg" alt="" />
-                                    <a href="blog_post_related_2_url" class="overlay">
-                                        <div class="inner">
-                                            <i class="icon-plus"></i>
+                                        <div class="post">
+                                            <figure>
+                                                <img src="../images/blog_loop_post_3_image.jpg" alt=""/>
+                                                <a href="posts/Page_Title3.html" class="overlay">
+                                                    <div class="inner">
+                                                        <i class="icon-plus"></i>
+                                                    </div>
+                                                    <div class="background"></div>
+                                                </a>
+                                            </figure>
+                                            <a href="posts/Page_Title3.html" class="post-title">Page Title3</a>
+                                            <span class="related_post-title">page subtitle</span>
                                         </div>
-                                        <div class="background"></div>
-                                    </a>
-                                </figure>
-                                <a href="blog_post_related_2_url" class="post-title">Page Title</a>
-                                <span class="info">page subtitle</span>
-                            </div>
-                            <div class="post">
-                                <figure>
-                                    <img src="../images/blog_loop_post_3_image.jpg" alt="" />
-                                    <a href="blog_post_related_3_url" class="overlay">
-                                        <div class="inner">
-                                            <i class="icon-plus"></i>
+                                        <div class="post">
+                                            <figure>
+                                                <img src="../images/blog_loop_post_4_image.jpg" alt=""/>
+                                                <a href="posts/Page_Title4.html" class="overlay">
+                                                    <div class="inner">
+                                                        <i class="icon-plus"></i>
+                                                    </div>
+                                                    <div class="background"></div>
+                                                </a>
+                                            </figure>
+                                            <a href="posts/Page_Title4.html" class="post-title">Page Title4</a>
+                                            <span class="related_post-title">page subtitle</span>
                                         </div>
-                                        <div class="background"></div>
-                                    </a>
-                                </figure>
-                                <a href="blog_post_related_3_url" class="post-title">Page Title3</a>
-                                <span class="info">page subtitle</span>
+                                    </div>
+                                    
                             </div>
-
                         </div>
                         <div class="author">
                             <figure>
-                                <img src="../images/author.jpg" alt="" />
+                                <img src="../images/author.jpg" alt=""/>
                             </figure>
                             <a href="#" class="name">COREY HAGGARD</a>
                             <div class="contact">http://www.coreyhaggard.com</div>
                             <div class="content">
-                                We might indeed have <span class="underline">been the wraiths</span> of the departed
-                                dead <em>upon
-                                    the dead</em> sea of that dying planet for all.
+                                We might indeed have <span class="underline">been the wraiths</span> of the departed dead <em>upon
+                                the dead</em> sea of that dying planet for all.
                             </div>
                         </div>
-                        <!-- <div class="post-section">
-                        <i class="icon-comment"></i>Comments
-                    </div>
-                    <ul class="comments">
-                        <li>
-                            <figure>
-                                <img src="../images/user-01.jpg" alt=""/>
-                            </figure>
-                            <a href="#" class="name">WALTER STEPHANIE</a>
-                            <div class="contact">http://www.teothemes.com/</div>
-                            <div class="content">
-                                It frequently happens that when several ships are cruising in 
-                                company, a whale may be struck by one vessel, then escape, and 
-                                be finally killed and captured by another vessel; and herein 
-                                are indirectly comprised many minor contingencies.
+                        <!-- <div class="post-sidebar-padding">
+                            <div class="post-section">
+                                <i class="icon-comment"></i>Comments
                             </div>
-                            <a class="reply" href="#">Reply <span class="no-font">&ndash;</span></a>
-                            <div class="comment-no">01</div>
-                        </li>
-                        <ul>
+                        </div> -->
+                        <!-- <ul class="comments">
                             <li>
                                 <figure>
-                                    <img src="../images/user-02.jpg" alt=""/>
+                                    <img src="../images/user-01.jpg" alt=""/>
                                 </figure>
-                                <a href="#" class="name">SARAH WHINNEM</a>
-                                <div class="contact">http://www.hello.com/</div>
+                                <a href="#" class="name">WALTER STEPHANIE</a>
+                                <div class="contact">http://www.hi.com/</div>
                                 <div class="content">
                                     Perhaps the only formal whaling code authorized by legislative
-                                enactment, was that of Holland. It was decreed by the States-
-                                
-                                    General in A.D. 1695. But though no other nation.
+                                    enactment, was that of Holland. It was decreed.
                                 </div>
                                 <a class="reply" href="#">Reply <span class="no-font">&ndash;</span></a>
-                                <div class="comment-no">1.1</div>
+                                <div class="comment-no">01</div>
                             </li>
-                        </ul>
-                        <li>
-                            <figure>
-                                <img src="../images/user-01.jpg" alt=""/>
-                            </figure>
-                            <a href="#" class="name">WALTER STEPHANIE</a>
-                            <div class="contact">http://www.teothemes.com/</div>
-                            <div class="content">
-                                Perhaps the only formal whaling code authorize by legislative
-                                enactment, was that of Holland. It was decreed.
+                            <ul>
+                                <li>
+                                    <figure>
+                                        <img src="../images/user-02.jpg" alt=""/>
+                                    </figure>
+                                    <a href="#" class="name">SARAH WHINNEM</a>
+                                    <div class="contact">http://www.hello.com/</div>
+                                    <div class="content">
+                                        Perhaps the only formal whaling code authorized by legislative
+                                    enactment, was that of Holland. It was decreed by the States-
+                                
+                                        General in A.D. 1695. But though no other nation.
+                                    </div>
+                                    <a class="reply" href="#">Reply <span class="no-font">&ndash;</span></a>
+                                    <div class="comment-no">1.1</div>
+                                </li>
+                            </ul>
+                            <li>
+                                <figure>
+                                    <img src="../images/user-01.jpg" alt=""/>
+                                </figure>
+                                <a href="#" class="name">WALTER STEPHANIE</a>
+                                <div class="contact">http://teothemes.com/</div>
+                                <div class="content">
+                                    It frequently happens that when several ships are cruising in 
+                                    company, a whale may be struck by one vessel, then escape, and 
+                                    be finally killed and captured by another vessel; and herein 
+                                    are indirectly comprised many minor contingencies.
+                                </div>
+                                <a class="reply" href="#">Reply <span class="no-font">&ndash;</span></a>
+                                <div class="comment-no">02</div>
+                            </li>
+                        </ul> -->
+                        <!-- <div class="post-sidebar-padding">
+                            <div class="post-section">
+                                Leave a reply
                             </div>
-                            <a class="reply" href="#">Reply <span class="no-font">&ndash;</span></a>
-                            <div class="comment-no">02</div
-                        </li>
-                    </ul>
-                    <div class="post-section">
-                        Leave a reply
+                        </div>
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" class="form-control" id="name" name="name"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="website">Website:</label>
+                                <input type="url" class="form-control" id="website" name="website"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="text" class="form-control" id="email" name="email"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message:</label>
+                                <textarea name="message" id="message"></textarea>
+                            </div>
+                            <button class="btn btn-default" type="submit">Reply</button>
+                        </form> -->
                     </div>
-                    <form role="form">
-                        <div class="form-group">
-                            <label for="name">Name:</label>
-                            <input type="text" class="form-control" id="name" name="name"/>
+                </div>
+                <div class="col-sm-4">
+                    <aside class="widgets">
+                        <div class="widget about">
+                            <div class="title">About me</div>
+                            <figure>
+                                <img src="../images/owner.jpg" alt="" />
+                            </figure>
+                            <a href="#" class="name">sidebar_about_me_author_name</a>
+                            <div class="content">
+                                sidebar_about_me_text
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="website">Website:</label>
-                            <input type="url" class="form-control" id="website" name="website"/>
+                        <div class="widget posts">
+                            <div class="title">Latest Posts</div>
+                            <ul>
+                                <!-- todo this needs at least a title andthumbnail image sidebar_recent_post_1-4 -->
+                                <li>
+                                    <a href="sidebar_recent_post_1_title.html">
+                                        <figure>
+                                            <img src="images/sidebar_recent_post_1_image_thumbnail.jpg" alt="" />
+                                        </figure>
+                                    </a>
+                                    <a href="sidebar_recent_post_1_title.html"
+                                        class="post-title">sidebar_recent_post_1_title</a>
+                                </li>
+                                <li>
+                                    <a href="sidebar_recent_post_2_title.html">
+                                        <figure>
+                                            <img src="images/sidebar_recent_post_2_image_thumbnail.jpg" alt="" />
+                                        </figure>
+                                    </a>
+                                    <a href="sidebar_recent_post_2_title.html"
+                                        class="post-title">sidebar_recent_post_2_title</a>
+                                </li>
+                                <li>
+                                    <a href="sidebar_recent_post_3_title.html">
+                                        <figure>
+                                            <img src="images/sidebar_recent_post_3_image_thumbnail.jpg" alt="" />
+                                        </figure>
+                                    </a>
+                                    <a href="sidebar_recent_post_3_title.html"
+                                        class="post-title">sidebar_recent_post_3_title</a>
+                                </li>
+                                <li>
+                                    <a href="sidebar_recent_post_4_title.html">
+                                        <figure>
+                                            <img src="images/sidebar_recent_post_4_image_thumbnail.jpg" alt="" />
+                                        </figure>
+                                    </a>
+                                    <a href="sidebar_recent_post_4_title.html"
+                                        class="post-title">sidebar_recent_post_4_title</a>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="form-group">
-                            <label for="email">Email:</label>
-                            <input type="text" class="form-control" id="email" name="email"/>
+                        <div class="widget advertisement">
+                            <figure>
+                                <!-- todo: change this for proper ad code -->
+                                <img src="images/ad.jpg" alt="" />  
+                            </figure>
                         </div>
-                        <div class="form-group">
-                            <label for="message">Message:</label>
-                            <textarea name="message" id="message"></textarea>
+                        <div class="widget instagram">
+                            <!--this needs a proper Instagram widget or deletion -->
+                            <div class="title">Instagram</div>
+                            <div class="content">
+                                <a href="#"><img src="images/insta-01.jpg" alt="" /></a>
+                                <a href="#"><img src="images/insta-02.jpg" alt="" /></a>
+                                <a href="#"><img src="images/insta-03.jpg" alt="" /></a>
+                                <a href="#"><img src="images/insta-04.jpg" alt="" /></a>
+                                <a href="#"><img src="images/insta-05.jpg" alt="" /></a>
+                                <a href="#"><img src="images/insta-06.jpg" alt="" /></a>
+                            </div>
+                            <a href="sidebar_instagram_link" class="btn btn-default btn-instagram">Follow me</a>
                         </div>
-                        <button class="btn btn-default" type="submit">Reply</button>
-                    </form> -->
-                    </div>
+                    </aside>
                 </div>
             </div>
         </div>
@@ -245,5 +320,4 @@
     <script src="js/vendor/jquery.bxslider.min.js"></script>
     <script src="js/main.js"></script>
 </body>
-
 </html>
