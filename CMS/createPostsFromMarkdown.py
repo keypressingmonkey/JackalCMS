@@ -28,17 +28,17 @@ def optimize_images():
         for image in file:
             if (image.endswith('.jpg') or image.endswith('.png')) and not image.startswith('optimized_') and not image.startswith('thumb_optimized_') and not 'logo' in image and not image.startswith('related_optimized_') and not image.startswith('sidebar_optimized_') :
                 
-                img = Image.open(os.path.join(root,image))
-                img = resizeimage.resize_width(img, int(760), validate=False)
+                original_image = Image.open(os.path.join(root,image))
+                img = resizeimage.resize_width(original_image, int(760), validate=False)
+                img = resizeimage.resize_width(original_image, int(80), validate=False)
+                img.save(os.path.join(root,'thumb_optimized_'+image))
+                img = resizeimage.resize_width(original_image, int(214), validate=False)
+                img.save(os.path.join(root,'related_optimized_'+image))
+                img = resizeimage.resize_width(original_image, int(350), validate=False)
+                img.save(os.path.join(root,'sidebar_optimized_'+image))
                 img.save(os.path.join(root,'optimized_'+image),
                         optimize=True,
-                        quality=int(60))
-                img = resizeimage.resize_width(img, int(80), validate=False)
-                img.save(os.path.join(root,'thumb_optimized_'+image))
-                img = resizeimage.resize_width(img, int(214), validate=False)
-                img.save(os.path.join(root,'related_optimized_'+image))
-                img = resizeimage.resize_width(img, int(200), validate=False)
-                img.save(os.path.join(root,'sidebar_optimized_'+image))
+                        quality=int(80))
 
 def convert_markdown_to_html(value):
     result = ''
