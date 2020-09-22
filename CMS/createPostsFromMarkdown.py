@@ -176,7 +176,7 @@ def get_blogroll_posts():
                     date = re.search(r'(\ndate: ")(.*?)(")',
                                     frontmatter, re.MULTILINE).group(2)
                     date = dt.strptime(date, "%Y-%m-%d")
-                    all_posts.append(['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date,content,teaser])
+                    all_posts.append([title.replace(' ', '_')+'.html', title, subtitle, image, date,content,teaser])
         break
     sorted_list = sorted(all_posts, key=lambda tup: tup[4])
     # here we sort by date and skip the highest to start the blogroll with the first nonfeatured post
@@ -270,7 +270,7 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
                             template = template.replace(config_value[0], config_value[1])
 
                     newPostFileName = current_post_title.replace('.md', '.html').replace('.markdown', '.html').replace(' ', '_')
-                    with open(os.path.join(os.getcwd(), 'site','posts', newPostFileName+'.html'), 'w') as newpost:
+                    with open(os.path.join(os.getcwd(), 'site', newPostFileName+'.html'), 'w') as newpost:
                         newpost.write(template)
                         newpost.close
                         template_file.close                        
@@ -319,11 +319,11 @@ with open(os.path.join(os.getcwd(), 'site/templates/index.html'),'r') as templat
             template = template.replace('sidebar_recent_post_4_title', blogroll[3][1])
             template = template.replace('sidebar_recent_post_4_image', blogroll[3][3]) 
         
-        template = template.replace('featured_post_1_url', blogroll[0][0])
-        template = template.replace('featured_post_1_title', blogroll[0][1])
-        template = template.replace('featured_post_1_subtitle', blogroll[0][2])
-        template = template.replace('featured_post_1_image',blogroll[0][3])
-        template = template.replace('featured_post_1_teaser_text',blogroll[0][5][:int(frontpage_featured_teaser_length)])
+        template = template.replace('featured_post_url', blogroll[0][0])
+        template = template.replace('featured_post_title', blogroll[0][1])
+        template = template.replace('featured_post_subtitle', blogroll[0][2])
+        template = template.replace('featured_post_image',blogroll[0][3])
+        template = template.replace('featured_post_teaser_text',blogroll[0][5][:int(frontpage_featured_teaser_length)])
 
         blogroll_without_featured = sorted(blogroll,key=lambda x: x[4])[0:len(blogroll)-1]
         blogroll_html = ''
