@@ -74,7 +74,6 @@ def generate_sidebar_widget(blogroll):
             sidebar_widget_template = template_file.read()
             return sidebar_widget_template.replace('sidebar_recent_post_component',generate_recent_posts_widget(blogroll))
 
-
 def generate_related_posts_widget(related_posts):
     with open(os.path.join(os.getcwd(), themefolder,'templates/related_posts.html'),'r') as template_file:
         post_template = template_file.read()
@@ -116,7 +115,6 @@ def load_values_from_config():
                 value = re.match(r'(.*?):.*?"(.*?)"($|\n)',line).group(2)
                 config_values.append([name, value])
         return config_values
-        
 
 def resize_and_optimize(imagefile,imagename:str,subfolder: str,width:int,shall_optimize:bool,optimizationgrade:int):
     img = resizeimage.resize_width(imagefile, width, validate=False)
@@ -154,8 +152,6 @@ def convert_markdown_to_html(value):
         #     line = '<p>'+line+ '</p>'
         result += line
     return result
-    
-
 
 def get_previous_post(current_post_date):
     all_previous_posts = []
@@ -176,7 +172,6 @@ def get_previous_post(current_post_date):
         return max(sorted(all_previous_posts, key=lambda tup: tup[4]))
     else:
         return(['/', 'Homepage', '', 'default.jpg', ''])
-
 
 def get_next_post(current_post_date):
     all_next_posts = []
@@ -260,8 +255,7 @@ def generate_post_pages():
                     current_post_subtitle = post[1]
                     current_post_image = post[3]
                     current_post_date = post[4]
-                    current_post_content = post[5]
-                    current_post_content = convert_markdown_to_html(current_post_content)
+                    current_post_content = convert_markdown_to_html(post[5])
                 
                     previous_post = get_previous_post(current_post_date)
                     previous_post_url = previous_post[0]
@@ -327,9 +321,12 @@ def generate_index_page():
                 indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
                 indexPage.close
                 template_file.close
-#main
 
-copy_theme_files()
-generate_post_pages()
-generate_index_page()
-optimize_images()
+def main():
+    copy_theme_files()
+    generate_post_pages()
+    generate_index_page()
+    optimize_images()
+
+if __name__ == "__main__":
+    main()
