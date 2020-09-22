@@ -23,6 +23,13 @@ def replace_config_data(template):
     
     return template
 
+def get_single_value_from_config(name_of_value:str):
+    config_values = load_values_from_config()
+    
+    for config_value in config_values:
+        if config_value[0] == name_of_value:
+            return config_value[1]        
+
 def copy_theme_files():
     config_values = load_values_from_config()
     for config_value in config_values:
@@ -101,6 +108,7 @@ def get_frontmatter_values(frontmatter:str):
 
 def load_values_from_config(): 
     with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
+        global config_values 
         config_values = []
         for line in config.readlines():
             if(re.match(r'(.*?):(.*?)',line)):
@@ -149,7 +157,7 @@ def convert_markdown_to_html(value):
     
 
 
-def get_previous_post():
+def get_previous_post(current_post_date):
     all_previous_posts = []
 
     for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
@@ -170,7 +178,7 @@ def get_previous_post():
         return(['/', 'Homepage', '', 'default.jpg', ''])
 
 
-def get_next_post():
+def get_next_post(current_post_date):
     all_next_posts = []
 
     for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
@@ -189,7 +197,6 @@ def get_next_post():
         return min(sorted(all_next_posts, key=lambda tup: tup[4]))
     else:
         return(['/', 'Homepage', '', 'default.jpg', ''])
-
 
 def get_blogroll_posts():    
     all_posts = []
@@ -211,9 +218,15 @@ def generate_blogroll_widget():
         with open(os.path.join(os.getcwd(), themefolder,'templates/blogroll_post.html'),'r') as template_file:
             recent_posts_template = template_file.read()
             all_posts = ''
-            blogroll_without_featured = sorted(get_blogroll_posts(),key=lambda x: x[4])[0:len(blogroll)-1]
+            blogroll = get_blogroll_posts()
+            blogroll_without_featured = sorted(blogroll,key=lambda x: x[4])[0:len(blogroll)-1]
+
             for post in sorted(blogroll_without_featured,key=lambda x: x[4],reverse=True):
-                post_template = recent_posts_template.replace('blog_loop_post_url',post[0]).replace('blog_loop_post_title',post[1]).replace('blog_loop_post_subtitle',post[2]).replace('blog_loop_post_image',post[3]).replace('blog_loop_post_teaser_text',convert_markdown_to_html(post[6][0:int(frontpage_teaser_length)]+'......'))
+                post_template = recent_posts_template.replace('blog_loop_post_url',post[0])
+                post_template = post_template.replace('blog_loop_post_title',post[1])
+                post_template = post_template.replace('blog_loop_post_subtitle',post[2])
+                post_template = post_template.replace('blog_loop_post_image',post[3])
+                post_template = post_template.replace('blog_loop_post_teaser_text',convert_markdown_to_html(post[6][0:int(get_single_value_from_config('frontpage_teaser_length'))]+'......'))
                 all_posts += post_template
             
             return all_posts
@@ -221,7 +234,6 @@ def generate_blogroll_widget():
         return ''
     
     get_blogroll_posts
-
 
 def get_related_posts(current_post_title):    
     all_posts = []
@@ -237,89 +249,87 @@ def get_related_posts(current_post_title):
         break
     return random.sample(all_posts,3)
 
+def generate_post_pages():
+    for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
+        for file in files:
+            if file.endswith('.md') or file.endswith('.markdown'):
+                with open(os.path.join(root, file)) as template:
+                    post_text = template.read()  # this way we get to separate frontmatter from post content
+                    post = generate_post_from_Markdown(post_text)       
+                    current_post_title = post[0]
+                    current_post_subtitle = post[1]
+                    current_post_image = post[3]
+                    current_post_date = post[4]
+                    current_post_content = post[5]
+                    current_post_content = convert_markdown_to_html(current_post_content)
+                
+                    previous_post = get_previous_post(current_post_date)
+                    previous_post_url = previous_post[0]
+                    previous_post_title = previous_post[1]
+                    previous_post_subtitle = previous_post[2]
+                    previous_post_image = previous_post[3]
+                    previous_post_date = previous_post[4]
+                    next_post = get_next_post(current_post_date)
+                    next_post_url = next_post[0]
+                    next_post_title = next_post[1]
+                    next_post_subtitle = next_post[2]
+                    next_post_image = next_post[3]
+                    next_post_date = next_post[4]
+
+                    #related posts 
+
+                    with open(os.path.join(os.path.join(os.getcwd(), themefolder,'templates','post-sidebar.html')), 'r') as template_file:
+                        related_posts = get_related_posts(current_post_title)                
+                        template = template_file.read()
+                        template = template.replace('post_title', current_post_title)
+                        template = template.replace('post_subtitle', current_post_subtitle)
+                        
+                        template = template.replace('previous_post_url', previous_post_url)
+                        template = template.replace('next_post_url', next_post_url)
+                        template = template.replace('post_content', current_post_content)
+                        related_posts_widget = generate_related_posts_widget(get_related_posts(current_post_title))
+                        template = template.replace('related_posts_widget',related_posts_widget)
+                        blogroll = get_blogroll_posts()
+                        blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
+                        template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
+                        template = replace_config_data(template)
+
+                        newPostFileName = current_post_title.replace('.md', '.html').replace('.markdown', '.html').replace(' ', '_')
+                        with open(os.path.join(os.getcwd(), 'site', newPostFileName), 'w') as newpost:
+                            newpost.write(template)
+                            newpost.close
+                            template_file.close   
+        break
+
+def generate_index_page():
+    with open(os.path.join(os.getcwd(), themefolder,'templates/index.html'),'r') as template_file:
+        template = template_file.read()
+        with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
+            config = config.readlines()       
+            frontpage_teaser_length = list(filter(lambda line: line.startswith('frontpage_teaser_length'),config))[0].replace('frontpage_teaser_length: "','').replace('"','').replace('\n','')
+            frontpage_featured_teaser_length = list(filter(lambda line: line.startswith('frontpage_featured_teaser_length'),config))[0].replace('frontpage_featured_teaser_length: "','').replace('"','').replace('\n','')
+        
+            blogroll = get_blogroll_posts()
+            blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
+
+            template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
+            
+            
+            template = template.replace('featured_post_url', blogroll[0][0])
+            template = template.replace('featured_post_title', blogroll[0][1])
+            template = template.replace('featured_post_subtitle', blogroll[0][2])
+            template = template.replace('featured_post_image',blogroll[0][3])
+            template = template.replace('featured_post_teaser_text',blogroll[0][5][:int(frontpage_featured_teaser_length)])
+
+            template = template.replace('blog_roll',generate_blogroll_widget())
+            template = replace_config_data(template)
+            with open(os.path.join(os.getcwd(), 'site','index.html'), 'w') as indexPage:
+                indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
+                indexPage.close
+                template_file.close
 #main
 
 copy_theme_files()
-
-
-
-for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
-    for file in files:
-        if file.endswith('.md') or file.endswith('.markdown'):
-            with open(os.path.join(root, file)) as template:
-                post_text = template.read()  # this way we get to separate frontmatter from post content
-                post = generate_post_from_Markdown(post_text)       
-                current_post_title = post[0]
-                current_post_subtitle = post[1]
-                current_post_image = post[3]
-                current_post_date = post[4]
-                current_post_content = post[5]
-                
-                # todo order is important here, better fix this
-                current_post_content = convert_markdown_to_html(current_post_content)
-              
-                previous_post = get_previous_post()
-                previous_post_url = previous_post[0]
-                previous_post_title = previous_post[1]
-                previous_post_subtitle = previous_post[2]
-                previous_post_image = previous_post[3]
-                previous_post_date = previous_post[4]
-                next_post = get_next_post()
-                next_post_url = next_post[0]
-                next_post_title = next_post[1]
-                next_post_subtitle = next_post[2]
-                next_post_image = next_post[3]
-                next_post_date = next_post[4]
-
-                #related posts 
-
-                with open(os.path.join(os.path.join(os.getcwd(), themefolder,'templates','post-sidebar.html')), 'r') as template_file:
-                    related_posts = get_related_posts(current_post_title)                
-                    template = template_file.read()
-                    template = template.replace('post_title', current_post_title)
-                    template = template.replace('post_subtitle', current_post_subtitle)
-                    
-                    template = template.replace('previous_post_url', previous_post_url)
-                    template = template.replace('next_post_url', next_post_url)
-                    template = template.replace('post_content', current_post_content)
-                    related_posts_widget = generate_related_posts_widget(get_related_posts(current_post_title))
-                    template = template.replace('related_posts_widget',related_posts_widget)
-                    blogroll = get_blogroll_posts()
-                    blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
-                    template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
-                    template = replace_config_data(template)
-
-                    newPostFileName = current_post_title.replace('.md', '.html').replace('.markdown', '.html').replace(' ', '_')
-                    with open(os.path.join(os.getcwd(), 'site', newPostFileName), 'w') as newpost:
-                        newpost.write(template)
-                        newpost.close
-                        template_file.close                        
-    break
-#todo fill index.html with posts
-with open(os.path.join(os.getcwd(), themefolder,'templates/index.html'),'r') as template_file:
-    template = template_file.read()
-    with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
-        config = config.readlines()       
-        frontpage_teaser_length = list(filter(lambda line: line.startswith('frontpage_teaser_length'),config))[0].replace('frontpage_teaser_length: "','').replace('"','').replace('\n','')
-        frontpage_featured_teaser_length = list(filter(lambda line: line.startswith('frontpage_featured_teaser_length'),config))[0].replace('frontpage_featured_teaser_length: "','').replace('"','').replace('\n','')
-       
-        blogroll = get_blogroll_posts()
-        blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
-
-        template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
-        
-        
-        template = template.replace('featured_post_url', blogroll[0][0])
-        template = template.replace('featured_post_title', blogroll[0][1])
-        template = template.replace('featured_post_subtitle', blogroll[0][2])
-        template = template.replace('featured_post_image',blogroll[0][3])
-        template = template.replace('featured_post_teaser_text',blogroll[0][5][:int(frontpage_featured_teaser_length)])
-
-        template = template.replace('blog_roll',generate_blogroll_widget())
-        template = replace_config_data(template)
-        with open(os.path.join(os.getcwd(), 'site','index.html'), 'w') as indexPage:
-            indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
-            indexPage.close
-            template_file.close
-
+generate_post_pages()
+generate_index_page()
 optimize_images()
