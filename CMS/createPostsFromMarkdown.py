@@ -207,7 +207,7 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
 
                 #related posts 
 
-                with open(os.path.join(os.path.join(os.getcwd(), 'site','posts','post-sidebar.html')), 'r') as template_file:
+                with open(os.path.join(os.path.join(os.getcwd(), 'site','templates','post-sidebar.html')), 'r') as template_file:
                     related_posts = get_related_posts(current_post_title)                
                     template = template_file.read()
                     template = template.replace(
@@ -270,7 +270,7 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
                         template_file.close                        
     break
 #todo fill index.html with posts
-with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template_file:
+with open(os.path.join(os.getcwd(), 'site/templates/index.html'),'r') as template_file:
     template = template_file.read()
     with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
         config = config.readlines()
