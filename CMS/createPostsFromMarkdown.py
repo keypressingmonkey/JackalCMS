@@ -299,7 +299,7 @@ with open(os.path.join(os.getcwd(), 'cms/index.html'),'r') as template_file:
         template = template.replace('sidebar_recent_post_1_title', blogroll[0][1]) 
         template = template.replace('sidebar_recent_post_1_image', blogroll[0][3])
         if len(blogroll)>1:
-            template = template.replace('sidebar_recent_post_2_url', blogroll[1][1])
+            template = template.replace('sidebar_recent_post_2_url', blogroll[1][0])
             template = template.replace('sidebar_recent_post_2_title', blogroll[1][1])
             template = template.replace('sidebar_recent_post_2_image', blogroll[1][3])
         if len(blogroll)>2:
