@@ -8,6 +8,17 @@ from datetime import datetime as dt
 import random
 from shutil import copyfile
 
+def load_values_from_config(): 
+    with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
+        config_values = []
+        for line in config.readlines():
+            if(re.match(r'(.*?):(.*?)',line)):
+                name = re.match(r'(.*?):(.*?)',line).group(1)
+                value = re.match(r'(.*?):.*?"(.*?)"',line).group(2)
+                config_values.append([name, value])
+        return config_values
+        
+
 def resize_and_optimize(imagefile,imagename:str,subfolder: str,width:int,shall_optimize:bool,optimizationgrade:int):
     img = resizeimage.resize_width(imagefile, width, validate=False)
     path = os.path.join(os.path.dirname(os.path.dirname( __file__ )),'site','images',subfolder,imagename)
@@ -220,36 +231,8 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
                     template = template.replace('next_post_url', next_post_url)
                     template = template.replace(
                         'post_content', current_post_content)
-                    with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
-                        config = config.readlines()                        
-                        sidebar_follow_me_url = list(filter(lambda line: line.startswith('sidebar_follow_me_url'),config))[0].replace('sidebar_follow_me_url: "','').replace('"','').replace('\n','')
-                        template = template.replace('sidebar_follow_me_url',sidebar_follow_me_url)
-                        website_title = list(filter(lambda line: line.startswith('website_title'),config))[0].replace('website_title: "','').replace('"','').replace('\n','')
-                        website_subtitle = list(filter(lambda line: line.startswith('website_subtitle'),config))[0].replace('website_subtitle: "','').replace('"','').replace('\n','')
-                        author_name = list(filter(lambda line: line.startswith('author_name'),config))[0].replace('author_name: "','').replace('"','').replace('\n','')
-                        author_bio = list(filter(lambda line: line.startswith('author_bio'),config))[0].replace('author_bio: "','').replace('"','').replace('\n','')
-                        author_image_name = list(filter(lambda line: line.startswith('author_image_name'),config))[0].replace('author_image_name: "','').replace('"','').replace('\n','')
-                        website_logo_white = list(filter(lambda line: line.startswith('website_logo_white'),config))[0].replace('website_logo_white: "','').replace('"','').replace('\n','')
-                        website_logo_dark = list(filter(lambda line: line.startswith('website_logo_dark'),config))[0].replace('website_logo_dark: "','').replace('"','').replace('\n','')
-                        instagram_profile_url = list(filter(lambda line: line.startswith('instagram_profile_url'),config))[0].replace('instagram_profile_url: "','').replace('"','').replace('\n','')
-                        sidebar_banner_ad_code = list(filter(lambda line: line.startswith('sidebar_banner_ad_code'),config))[0].replace('sidebar_banner_ad_code: "','').replace('"','').replace('\n','')
-                        header_nav_bar_links = list(filter(lambda line: line.startswith('header_nav_bar_links'),config))[0].replace('header_nav_bar_links: "','').replace('"','').replace('\n','').split(',')
-                        navlinks = ''
-                        for header_nav_bar_link in header_nav_bar_links:
-                            link = header_nav_bar_link.split('(')[0]
-                            link_name = header_nav_bar_link.split('(')[1].replace(')','')
-                            navlinks += '<li><a href="'+link +'">'+link_name + '</a></li>'
-                        template = template.replace('header_nav_bar_links',navlinks)
-
-                        template = template.replace('website_title',website_title)
-                        template = template.replace('website_subtitle',website_subtitle)
-                        template = template.replace('author_bio',author_bio)
-                        template = template.replace('website_logo_white',website_logo_white)
-                        template = template.replace('sidebar_banner_ad_code',sidebar_banner_ad_code)
-                        template = template.replace('author_name',author_name)
-                        template = template.replace('author_image_name',author_image_name)
-                        template = template.replace('website_logo_dark',website_logo_dark)
-                        template = template.replace('instagram_profile_url',instagram_profile_url)
+                    for config_value in load_values_from_config():
+                        template = template.replace(config_value[0], config_value[1])
                     template = template.replace('blog_post_related_post_1_url', related_posts[0][0])
                     template = template.replace('blog_post_related_post_1_title', related_posts[0][1])
                     template = template.replace('blog_post_related_post_1_subtitle', related_posts[0][2])
