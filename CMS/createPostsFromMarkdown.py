@@ -227,8 +227,26 @@ def generate_blogroll_widget():
             return all_posts
     else:
         return ''
-    
-    get_blogroll_posts
+
+def generate_featured_post_widget():
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/post_featured.html')):
+        with open(os.path.join(os.getcwd(), themefolder,'templates/post_featured.html'),'r') as template_file:
+            recent_posts_template = template_file.read()
+            all_posts = ''
+            blogroll = get_blogroll_posts()
+            blogroll_featured = sorted(blogroll,key=lambda x: x[4],reverse=True)[len(blogroll)-3:len(blogroll)]
+
+            for post in sorted(blogroll_featured,key=lambda x: x[4],reverse=True):
+                post_template = recent_posts_template.replace('featured_post_url',post[0])
+                post_template = post_template.replace('featured_post_title',post[1])
+                post_template = post_template.replace('featured_post_subtitle',post[2])
+                post_template = post_template.replace('featured_post_image',post[3])
+                post_template = post_template.replace('featured_post_teaser_text',convert_markdown_to_html(post[6][0:int(get_single_value_from_config('frontpage_featured_teaser_length'))]+'......'))
+                all_posts += post_template
+            
+            return all_posts
+    else:
+        return ''
 
 def get_related_posts(current_post_title):    
     all_posts = []
@@ -316,6 +334,7 @@ def generate_index_page():
             template = template.replace('featured_post_teaser_text',blogroll[0][5][:int(frontpage_featured_teaser_length)])
 
             template = template.replace('blog_roll',generate_blogroll_widget())
+            template = template.replace('featured_post_widget',generate_featured_post_widget())
             template = replace_config_data(template)
             with open(os.path.join(os.getcwd(), 'site','index.html'), 'w') as indexPage:
                 indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
