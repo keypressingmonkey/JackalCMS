@@ -9,6 +9,19 @@ import random
 import shutil
 from shutil import copyfile
 
+def replace_config_data(template):
+    config_values = load_values_from_config()
+    
+    for config_value in config_values:
+        if config_value[0] == 'header_nav_bar_links':
+            navlinks = ''
+            for header_nav_bar_link in config_value[1].split(','):            
+                navlinks += header_nav_bar_link
+            template = template.replace('header_nav_bar_links',navlinks)
+        else:
+            template = template.replace(config_value[0], config_value[1])
+    
+    return template
 
 def copy_theme_files():
     config_values = load_values_from_config()
@@ -21,7 +34,7 @@ def copy_theme_files():
     deploy_folder = os.path.join(os.getcwd(),'site')
     if os.path.exists(deploy_folder):
         shutil.rmtree(deploy_folder, ignore_errors=True)
-        
+
     for src_dir, dirs, files in os.walk(themefolder):
         dst_dir = src_dir.replace(themefolder, deploy_folder, 1)
         if not os.path.exists(dst_dir):
@@ -256,16 +269,7 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
                     blogroll = get_blogroll_posts()
                     blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
                     template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
-                    config_values = load_values_from_config()
-                    
-                    for config_value in config_values:
-                        if config_value[0] == 'header_nav_bar_links':
-                            navlinks = ''
-                            for header_nav_bar_link in config_value[1].split(','):            
-                                navlinks += '<li>'+header_nav_bar_link+'</li>'
-                            template = template.replace('header_nav_bar_links',navlinks)
-                        else:
-                            template = template.replace(config_value[0], config_value[1])
+                    template = replace_config_data(template)
 
                     newPostFileName = current_post_title.replace('.md', '.html').replace('.markdown', '.html').replace(' ', '_')
                     with open(os.path.join(os.getcwd(), 'site', newPostFileName), 'w') as newpost:
@@ -300,22 +304,6 @@ with open(os.path.join(os.getcwd(), themefolder,'templates/index.html'),'r') as 
 
         template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
         
-
-        template = template.replace('sidebar_recent_post_1_url', blogroll[0][0])
-        template = template.replace('sidebar_recent_post_1_title', blogroll[0][1]) 
-        template = template.replace('sidebar_recent_post_1_image', blogroll[0][3])
-        if len(blogroll)>1:
-            template = template.replace('sidebar_recent_post_2_url', blogroll[1][0])
-            template = template.replace('sidebar_recent_post_2_title', blogroll[1][1])
-            template = template.replace('sidebar_recent_post_2_image', blogroll[1][3])
-        if len(blogroll)>2:
-            template = template.replace('sidebar_recent_post_3_url', blogroll[2][0])
-            template = template.replace('sidebar_recent_post_3_title', blogroll[2][1])
-            template = template.replace('sidebar_recent_post_3_image', blogroll[2][3])
-        if len(blogroll)>3:
-            template = template.replace('sidebar_recent_post_4_url', blogroll[3][0])
-            template = template.replace('sidebar_recent_post_4_title', blogroll[3][1])
-            template = template.replace('sidebar_recent_post_4_image', blogroll[3][3]) 
         
         template = template.replace('featured_post_url', blogroll[0][0])
         template = template.replace('featured_post_title', blogroll[0][1])
@@ -347,15 +335,7 @@ with open(os.path.join(os.getcwd(), themefolder,'templates/index.html'),'r') as 
 '''.replace('blog_loop_post_url',post[0]).replace('blog_loop_post_title',post[1]).replace('blog_loop_post_subtitle',post[2]).replace('blog_loop_post_image',post[3]).replace('blog_loop_post_teaser_text',convert_markdown_to_html(post[6][0:int(frontpage_teaser_length)]+'......'))
             blogroll_html += post_template
         template = template.replace('blog_roll', blogroll_html)
-        template = template.replace('website_title',website_title)
-        template = template.replace('website_subtitle',website_subtitle)
-        template = template.replace('sidebar_banner_ad_code',sidebar_banner_ad_code)
-        template = template.replace('author_name',author_name)
-        template = template.replace('author_bio',author_bio)
-        template = template.replace('author_image_name',author_image_name)
-        template = template.replace('website_logo_white',website_logo_white)
-        template = template.replace('website_logo_dark',website_logo_dark)
-        template = template.replace('instagram_profile_url',instagram_profile_url)
+        template = replace_config_data(template)
         with open(os.path.join(os.getcwd(), 'site','index.html'), 'w') as indexPage:
             indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
             indexPage.close
