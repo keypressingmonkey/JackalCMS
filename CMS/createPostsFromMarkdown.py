@@ -90,10 +90,6 @@ def get_previous_post():
 
 
 def get_next_post():
-    next_post_url = ''
-    next_post_title = ''
-    next_post_subtitle = ''
-    next_post_image = ''
     all_next_posts = []
 
     for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
@@ -123,11 +119,7 @@ def get_next_post():
         return(['/', 'Homepage', '', 'default.jpg', ''])
 
 
-def get_blogroll_posts():
-    next_post_url = ''
-    next_post_title = ''
-    next_post_subtitle = ''
-    next_post_image = ''
+def get_blogroll_posts():    
     all_posts = []
 
     for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
