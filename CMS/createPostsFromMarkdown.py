@@ -8,21 +8,6 @@ from datetime import datetime as dt
 import random
 from shutil import copyfile
 
-current_post_title = ''
-current_post_subtitle = ''
-current_post_image = ''
-current_post_date = ''
-current_post_content = ''
-
-website_title = ''
-website_subtitle = ''
-author_name = ''
-author_bio = ''
-author_image_name = ''
-instagram_profile_url = ''
-sidebar_banner_ad_code = ''
-
-blogroll = []
 
 def optimize_images():
     for root,dirs,file in os.walk(os.path.join(os.getcwd(),'images')):
