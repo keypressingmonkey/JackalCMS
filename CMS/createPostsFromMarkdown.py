@@ -51,7 +51,7 @@ def generate_post_from_Markdown(post_text):
     subtitle = re.search(r'(\nsubtitle: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
     image = re.search(r'(\nimage: ")(.*?)(")',frontmatter).group(2)
     date = re.search(r'(\ndate: ")(.*?)(")',frontmatter, re.MULTILINE).group(2)
-    return ['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date]
+    return [title.replace(' ', '_')+'.html', title, subtitle, image, date,content,teaser]
 
 def get_frontmatter_values(frontmatter:str):
     frontmattervalues = []
@@ -161,22 +161,8 @@ def get_blogroll_posts():
             if file.endswith('.md') or file.endswith('.markdown'):
                 with open(os.path.join(root, file)) as f:
                     post_text = f.read()  # this way we get to separate frontmatter from post content
-                    frontmatter = re.match(
-                        r'(---)((.|\n)*?)(---)', post_text).group(2)
-                    content = re.sub(
-                        r'(---)((.|\n)*?)(---)', '', post_text).lstrip('\n')
-                    teaser = re.match(
-                        r'((.|\n)*?)#', content).group(1).lstrip('\n')
-                    title = re.search(r'(\ntitle: ")(.*?)(")',
-                                    frontmatter, re.MULTILINE).group(2)
-                    subtitle = re.search(
-                        r'(\nsubtitle: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
-                    image = re.search(r'(\nimage: ")(.*?)(")',
-                                    frontmatter).group(2)
-                    date = re.search(r'(\ndate: ")(.*?)(")',
-                                    frontmatter, re.MULTILINE).group(2)
-                    date = dt.strptime(date, "%Y-%m-%d")
-                    all_posts.append([title.replace(' ', '_')+'.html', title, subtitle, image, date,content,teaser])
+                    post = generate_post_from_Markdown(post_text)                    
+                    all_posts.append(post)
         break
     sorted_list = sorted(all_posts, key=lambda tup: tup[4])
     # here we sort by date and skip the highest to start the blogroll with the first nonfeatured post
@@ -189,21 +175,9 @@ def get_related_posts(current_post_title):
             if file.endswith('.md') or file.endswith('.markdown'):
                 with open(os.path.join(root, file)) as f:
                     post_text = f.read()  # this way we get to separate frontmatter from post content
-                    frontmatter = re.match(
-                        r'(---)((.|\n)*?)(---)', post_text).group(2)
-                    content = re.sub(
-                        r'(---)((.|\n)*?)(---)', '', post_text).lstrip('\n')
-                    title = re.search(r'(\ntitle: ")(.*?)(")',
-                                    frontmatter, re.MULTILINE).group(2)
-                    subtitle = re.search(
-                        r'(\nsubtitle: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
-                    image = re.search(r'(\nimage: ")(.*?)(")',
-                                    frontmatter).group(2)
-                    date = re.search(r'(\ndate: ")(.*?)(")',
-                                    frontmatter, re.MULTILINE).group(2)
-                    date = dt.strptime(date, "%Y-%m-%d")
-                    if not title == current_post_title:
-                        all_posts.append(['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date,content])    
+                    post = generate_post_from_Markdown(post_text)                    
+                    if not post[1] == current_post_title:
+                        all_posts.append(post)
         break
     return random.sample(all_posts,3)
 
@@ -214,18 +188,13 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
         if file.endswith('.md') or file.endswith('.markdown'):
             with open(os.path.join(root, file)) as template:
                 post_text = template.read()  # this way we get to separate frontmatter from post content
-                frontmatter = re.match(
-                    r'(---)((.|\n)*?)(---)', post_text).group(2)
-                current_post_content = re.sub(
-                    r'(---)((.|\n)*?)(---)', '', post_text).lstrip('\n')
-                current_post_title = re.search(
-                    r'(\ntitle: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
-                current_post_subtitle = re.search(
-                    r'(\nsubtitle: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
-                current_post_image = re.search(
-                    r'(\nimage: ")(.*?)(")', frontmatter).group(2)
-                current_post_date = re.search(
-                    r'(\ndate: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
+                post = generate_post_from_Markdown(post_text)       
+                current_post_title = post[0]
+                current_post_subtitle = post[1]
+                current_post_image = post[3]
+                current_post_date = post[4]
+                current_post_content = post[5]
+                
                 # todo order is important here, better fix this
                 current_post_content = convert_markdown_to_html(current_post_content)
               
@@ -270,7 +239,7 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
                             template = template.replace(config_value[0], config_value[1])
 
                     newPostFileName = current_post_title.replace('.md', '.html').replace('.markdown', '.html').replace(' ', '_')
-                    with open(os.path.join(os.getcwd(), 'site', newPostFileName+'.html'), 'w') as newpost:
+                    with open(os.path.join(os.getcwd(), 'site', newPostFileName), 'w') as newpost:
                         newpost.write(template)
                         newpost.close
                         template_file.close                        

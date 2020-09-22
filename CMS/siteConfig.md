@@ -12,4 +12,5 @@ website_logo_white: "logo-white-small.png"
 frontpage_teaser_length: "100"
 frontpage_featured_teaser_length: "200"
 header_nav_bar_links: "<a href="https://YouTube.com">YouTube</a>,<a href="https://twitter.com">Twitter</a>"
+themefolder: "arwyn"
 ---
