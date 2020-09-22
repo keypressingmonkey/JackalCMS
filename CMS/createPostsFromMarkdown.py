@@ -8,6 +8,11 @@ from datetime import datetime as dt
 import random
 from shutil import copyfile
 
+def resize_and_optimize(imagefile,imagename:str,subfolder: str,width:int,shall_optimize:bool,optimizationgrade:int):
+    img = resizeimage.resize_width(imagefile, width, validate=False)
+    path = os.path.join(os.path.dirname(os.path.dirname( __file__ )),'site','images',subfolder,imagename)
+    img.save(path,optimize=shall_optimize, quality=optimizationgrade)
+
 def optimize_images():
     for root,dirs,file in os.walk(os.path.join(os.getcwd(),'site','images')):
         for image in file:
@@ -16,18 +21,12 @@ def optimize_images():
                 test = os.path.join(os.getcwd(),root,'backup',image)
                 if not os.path.isfile(os.path.join(os.getcwd(),root,'backup',image)):
                     original_image.save(os.path.join(os.getcwd(),root,'backup',image))
-                img = resizeimage.resize_width(original_image, int(760), validate=False)
-                img.save(os.path.join(os.getcwd(),root,'blogroll',image),optimize=True, quality=int(80))
-                img = resizeimage.resize_width(original_image, int(760), validate=False)
-                img.save(os.path.join(os.getcwd(),root,'featured',image),optimize=True, quality=int(80)) #check exact width
-                img = resizeimage.resize_width(original_image, int(80), validate=False)
-                img.save(os.path.join(os.getcwd(),root,'thumbs',image),optimize=True, quality=int(80))
-                img = resizeimage.resize_width(original_image, int(214), validate=False)
-                img.save(os.path.join(os.getcwd(),root,'related',image),optimize=True, quality=int(80))
-                img = resizeimage.resize_width(original_image, int(350), validate=False)
-                img.save(os.path.join(os.getcwd(),root,'sidebar_large',image),optimize=True, quality=int(80))
-                img = resizeimage.resize_width(original_image, int(130), validate=False)
-                img.save(os.path.join(os.getcwd(),root,'130px',image),optimize=True, quality=int(80))
+                img = resize_and_optimize(original_image,image,'blogroll',760,True,80)
+                img = resize_and_optimize(original_image,image,'featured',760,True,80)
+                img = resize_and_optimize(original_image,image,'thumbs',80,True,80)
+                img = resize_and_optimize(original_image,image,'related',214,True,80)
+                img = resize_and_optimize(original_image,image,'sidebar_large',350,True,80)
+                img = resize_and_optimize(original_image,image,'130px',130,True,80)                
         break #this break makes the os.walk non recursive so we don't optimize the optimized (quid opimizos optimizadan)
 
 def convert_markdown_to_html(value):
