@@ -193,7 +193,7 @@ def get_next_post():
 
 def get_blogroll_posts():    
     all_posts = []
-
+    
     for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
         for file in files:
             if file.endswith('.md') or file.endswith('.markdown'):
@@ -205,6 +205,24 @@ def get_blogroll_posts():
     sorted_list = sorted(all_posts, key=lambda tup: tup[4])
     # here we sort by date and skip the highest to start the blogroll with the first nonfeatured post
     return sorted_list
+
+def generate_blogroll_widget():
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/blogroll_post.html')):
+        with open(os.path.join(os.getcwd(), themefolder,'templates/blogroll_post.html'),'r') as template_file:
+            recent_posts_template = template_file.read()
+            all_posts = ''
+            blogroll_without_featured = sorted(get_blogroll_posts(),key=lambda x: x[4])[0:len(blogroll)-1]
+            for post in sorted(blogroll_without_featured,key=lambda x: x[4],reverse=True):
+                post_template = recent_posts_template.replace('blog_loop_post_url',post[0]).replace('blog_loop_post_title',post[1]).replace('blog_loop_post_subtitle',post[2]).replace('blog_loop_post_image',post[3]).replace('blog_loop_post_teaser_text',convert_markdown_to_html(post[6][0:int(frontpage_teaser_length)]+'......'))
+                all_posts += post_template
+            
+            return all_posts
+    else:
+        return ''
+    
+    get_blogroll_posts
+
+
 def get_related_posts(current_post_title):    
     all_posts = []
 
@@ -281,24 +299,10 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
 with open(os.path.join(os.getcwd(), themefolder,'templates/index.html'),'r') as template_file:
     template = template_file.read()
     with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
-        config = config.readlines()
-        
-        website_title = list(filter(lambda line: line.startswith('website_title'),config))[0].replace('website_title: "','').replace('"','').replace('\n','')
-        website_subtitle = list(filter(lambda line: line.startswith('website_subtitle'),config))[0].replace('website_subtitle: "','').replace('"','').replace('\n','')
-        author_name = list(filter(lambda line: line.startswith('author_name'),config))[0].replace('author_name: "','').replace('"','').replace('\n','')
-        author_bio = list(filter(lambda line: line.startswith('author_bio'),config))[0].replace('author_bio: "','').replace('"','').replace('\n','')
-        author_image_name = list(filter(lambda line: line.startswith('author_image_name'),config))[0].replace('author_image_name: "','').replace('"','').replace('\n','')
-        website_logo_white = list(filter(lambda line: line.startswith('website_logo_white'),config))[0].replace('website_logo_white: "','').replace('"','').replace('\n','')
-        website_logo_dark = list(filter(lambda line: line.startswith('website_logo_dark'),config))[0].replace('website_logo_dark: "','').replace('"','').replace('\n','')
-        instagram_profile_url = list(filter(lambda line: line.startswith('instagram_profile_url'),config))[0].replace('instagram_profile_url: "','').replace('"','').replace('\n','')
-        sidebar_banner_ad_code = list(filter(lambda line: line.startswith('sidebar_banner_ad_code'),config))[0].replace('sidebar_banner_ad_code: "','').replace('"','').replace('\n','')
+        config = config.readlines()       
         frontpage_teaser_length = list(filter(lambda line: line.startswith('frontpage_teaser_length'),config))[0].replace('frontpage_teaser_length: "','').replace('"','').replace('\n','')
         frontpage_featured_teaser_length = list(filter(lambda line: line.startswith('frontpage_featured_teaser_length'),config))[0].replace('frontpage_featured_teaser_length: "','').replace('"','').replace('\n','')
-        header_nav_bar_links = list(filter(lambda line: line.startswith('header_nav_bar_links'),config))[0].replace('header_nav_bar_links: "','').replace('"','').replace('\n','').split(',')
-        navlinks = ''
-        for header_nav_bar_link in header_nav_bar_links:            
-            navlinks += '<li>'+header_nav_bar_link+'</li>'
-        template = template.replace('header_nav_bar_links',navlinks)
+       
         blogroll = get_blogroll_posts()
         blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
 
@@ -311,30 +315,7 @@ with open(os.path.join(os.getcwd(), themefolder,'templates/index.html'),'r') as 
         template = template.replace('featured_post_image',blogroll[0][3])
         template = template.replace('featured_post_teaser_text',blogroll[0][5][:int(frontpage_featured_teaser_length)])
 
-        blogroll_without_featured = sorted(blogroll,key=lambda x: x[4])[0:len(blogroll)-1]
-        blogroll_html = ''
-        for post in sorted(blogroll_without_featured,key=lambda x: x[4],reverse=True):
-            post_template = '''<div class="homepage-post">
-                            <figure>
-                                <img src="images/blogroll/blog_loop_post_image" alt="" />
-                                <div class="overlay">
-                                    <div class="inner">
-                                        <div class="figure-text">
-                                            <!-- todo the page break here is not automatic, title has a br tag in the middle. Need to figure this out (with css?) -->
-                                            <h3><a href="blog_loop_post_url">blog_loop_post_title</a></h3>
-                                            <hr class="hidden-xs" />
-                                            <h5 class="hidden-xs">blog_loop_post_subtitle</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </figure>
-                            <p>blog_loop_post_teaser_text</p>
-                            <div class="readmore"><a href="blog_loop_post_url" class="text">Read More</a></div>
-                            
-                        </div>
-'''.replace('blog_loop_post_url',post[0]).replace('blog_loop_post_title',post[1]).replace('blog_loop_post_subtitle',post[2]).replace('blog_loop_post_image',post[3]).replace('blog_loop_post_teaser_text',convert_markdown_to_html(post[6][0:int(frontpage_teaser_length)]+'......'))
-            blogroll_html += post_template
-        template = template.replace('blog_roll', blogroll_html)
+        template = template.replace('blog_roll',generate_blogroll_widget())
         template = replace_config_data(template)
         with open(os.path.join(os.getcwd(), 'site','index.html'), 'w') as indexPage:
             indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
