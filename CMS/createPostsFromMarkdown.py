@@ -8,13 +8,66 @@ from datetime import datetime as dt
 import random
 from shutil import copyfile
 
+def generate_recent_posts_widget(blogroll):
+    if os.path.isfile(os.path.join(os.getcwd(), 'site/templates/recent_posts_sidebar.html')):
+        with open(os.path.join(os.getcwd(), 'site/templates/recent_posts_sidebar.html'),'r') as template_file:
+            recent_posts_template = template_file.read()
+            all_posts = ''
+            for post in blogroll:
+                temp = recent_posts_template
+                temp = temp.replace('recent_post_url', post[0])
+                temp = temp.replace('recent_post_title', post[1])
+                temp = temp.replace('recent_post_image', post[3])
+                all_posts += temp
+            return all_posts
+    else:
+        return ''
+
+def generate_sidebar_widget(blogroll):    
+    if os.path.isfile(os.path.join(os.getcwd(), 'site/templates/sidebar.html')):
+        with open(os.path.join(os.getcwd(), 'site/templates/sidebar.html'),'r') as template_file:
+            sidebar_widget_template = template_file.read()
+            return sidebar_widget_template.replace('sidebar_recent_post_component',generate_recent_posts_widget(blogroll))
+
+
+def generate_related_posts_widget(related_posts):
+    with open(os.path.join(os.getcwd(), 'site/templates/related_posts.html'),'r') as template_file:
+        post_template = template_file.read()
+        all_posts = ''
+        for post in related_posts:
+            temp = post_template
+            temp = temp.replace('blog_post_related_post_url', post[0])
+            temp = temp.replace('blog_post_related_post_title', post[1])
+            temp = temp.replace('blog_post_related_post_subtitle', post[2])
+            temp = temp.replace('blog_post_related_post_image', post[3])
+            all_posts += temp
+        return all_posts
+
+def generate_post_from_Markdown(post_text):
+    frontmatter = re.match(r'(---)((.|\n)*?)(---)', post_text).group(2)
+    content = re.sub(r'(---)((.|\n)*?)(---)', '', post_text).lstrip('\n')
+    teaser = re.match(r'((.|\n)*?)#', content).group(1).lstrip('\n')
+    title = re.search(r'(\ntitle: ")(.*?)(")',frontmatter, re.MULTILINE).group(2)
+    subtitle = re.search(r'(\nsubtitle: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
+    image = re.search(r'(\nimage: ")(.*?)(")',frontmatter).group(2)
+    date = re.search(r'(\ndate: ")(.*?)(")',frontmatter, re.MULTILINE).group(2)
+    return ['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date]
+
+def get_frontmatter_values(frontmatter:str):
+    frontmattervalues = []
+    for frontmattervalue in frontmatter.strip().split('\n'):
+        name = re.match(r'(.*?):.*?"(.*?)"',frontmattervalue).group(1)
+        value = re.match(r'(.*?):.*?"(.*?)"',frontmattervalue).group(2)
+        frontmattervalues.append({name:value})
+    return frontmattervalues
+
 def load_values_from_config(): 
     with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
         config_values = []
         for line in config.readlines():
             if(re.match(r'(.*?):(.*?)',line)):
                 name = re.match(r'(.*?):(.*?)',line).group(1)
-                value = re.match(r'(.*?):.*?"(.*?)"',line).group(2)
+                value = re.match(r'(.*?):.*?"(.*?)"($|\n)',line).group(2)
                 config_values.append([name, value])
         return config_values
         
@@ -65,22 +118,12 @@ def get_previous_post():
         for file in files:
             if file.endswith('.md') or file.endswith('.markdown'):
                 with open(os.path.join(root, file)) as f:
-                    post_text = f.read()  # this way we get to separate frontmatter from post content
-                    frontmatter = re.match(
-                        r'(---)((.|\n)*?)(---)', post_text).group(2)
-                    title = re.search(r'(\ntitle: ")(.*?)(")',
-                                    frontmatter, re.MULTILINE).group(2)
-                    subtitle = re.search(
-                        r'(\nsubtitle: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
-                    image = re.search(r'(\nimage: ")(.*?)(")',
-                                    frontmatter).group(2)
-                    date = re.search(r'(\ndate: ")(.*?)(")',
-                                    frontmatter, re.MULTILINE).group(2)
-                    date = dt.strptime(date, "%Y-%m-%d")
+                    post_text = f.read() 
+                    post = generate_post_from_Markdown(post_text)
+                    date = dt.strptime(post[4], "%Y-%m-%d")
                     master_post_date = dt.strptime(current_post_date, "%Y-%m-%d")
                     if date < master_post_date:
-                        all_previous_posts.append(
-                            ['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date])
+                        all_previous_posts.append(post)
         break
     if all_previous_posts:
         # this sorts by date and returns the highest, aka the previous post
@@ -97,20 +140,11 @@ def get_next_post():
             if file.endswith('.md') or file.endswith('.markdown'):
                 with open(os.path.join(root, file)) as f:
                     post_text = f.read()  # this way we get to separate frontmatter from post content
-                    frontmatter = re.match(
-                        r'(---)((.|\n)*?)(---)', post_text).group(2)
-                    title = re.search(r'(\ntitle: ")(.*?)(")',
-                                    frontmatter, re.MULTILINE).group(2)
-                    subtitle = re.search(
-                        r'(\nsubtitle: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
-                    image = re.search(r'(\nimage: ")(.*?)(")',
-                                    frontmatter).group(2)
-                    date = re.search(r'(\ndate: ")(.*?)(")',
-                                    frontmatter, re.MULTILINE).group(2)
-                    date = dt.strptime(date, "%Y-%m-%d")
+                    post = generate_post_from_Markdown(post_text)
+                    date = dt.strptime(post[4], "%Y-%m-%d")
                     master_post_date = dt.strptime(current_post_date, "%Y-%m-%d")
                     if date > master_post_date:
-                        all_next_posts.append(['posts/'+title.replace(' ', '_')+'.html', title, subtitle, image, date])
+                        all_next_posts.append(post)
         break
     if all_next_posts:
         # this sorts by date and returns the lowest with a higher date than the mainw, aka the next post
@@ -213,32 +247,29 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
                 with open(os.path.join(os.path.join(os.getcwd(), 'site','templates','post-sidebar.html')), 'r') as template_file:
                     related_posts = get_related_posts(current_post_title)                
                     template = template_file.read()
-                    template = template.replace(
-                        'post_title', current_post_title)
-                    template = template.replace(
-                        'post_subtitle', current_post_subtitle)
+                    template = template.replace('post_title', current_post_title)
+                    template = template.replace('post_subtitle', current_post_subtitle)
                     
-                    template = template.replace(
-                        'previous_post_url', previous_post_url)
+                    template = template.replace('previous_post_url', previous_post_url)
                     template = template.replace('next_post_url', next_post_url)
-                    template = template.replace(
-                        'post_content', current_post_content)
-                    for config_value in load_values_from_config():
-                        template = template.replace(config_value[0], config_value[1])
-                    template = template.replace('blog_post_related_post_1_url', related_posts[0][0])
-                    template = template.replace('blog_post_related_post_1_title', related_posts[0][1])
-                    template = template.replace('blog_post_related_post_1_subtitle', related_posts[0][2])
-                    template = template.replace('blog_post_related_post_1_image', related_posts[0][3])
-                    template = template.replace('blog_post_related_post_2_url', related_posts[1][0])
-                    template = template.replace('blog_post_related_post_2_title', related_posts[1][1])
-                    template = template.replace('blog_post_related_post_2_subtitle', related_posts[1][2])
-                    template = template.replace('blog_post_related_post_2_image', related_posts[1][3])
-                    template = template.replace('blog_post_related_post_3_url', related_posts[2][0])
-                    template = template.replace('blog_post_related_post_3_title', related_posts[2][1])
-                    template = template.replace('blog_post_related_post_3_subtitle', related_posts[2][2])
-                    template = template.replace('blog_post_related_post_3_image', related_posts[2][3])
-                    newPostFileName = current_post_title.replace(
-                        '.md', '.html').replace('.markdown', '.html').replace(' ', '_')
+                    template = template.replace('post_content', current_post_content)
+                    related_posts_widget = generate_related_posts_widget(get_related_posts(current_post_title))
+                    template = template.replace('related_posts_widget',related_posts_widget)
+                    blogroll = get_blogroll_posts()
+                    blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
+                    template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
+                    config_values = load_values_from_config()
+                    
+                    for config_value in config_values:
+                        if config_value[0] == 'header_nav_bar_links':
+                            navlinks = ''
+                            for header_nav_bar_link in config_value[1].split(','):            
+                                navlinks += '<li>'+header_nav_bar_link+'</li>'
+                            template = template.replace('header_nav_bar_links',navlinks)
+                        else:
+                            template = template.replace(config_value[0], config_value[1])
+
+                    newPostFileName = current_post_title.replace('.md', '.html').replace('.markdown', '.html').replace(' ', '_')
                     with open(os.path.join(os.getcwd(), 'site','posts', newPostFileName+'.html'), 'w') as newpost:
                         newpost.write(template)
                         newpost.close
@@ -263,13 +294,15 @@ with open(os.path.join(os.getcwd(), 'site/templates/index.html'),'r') as templat
         frontpage_featured_teaser_length = list(filter(lambda line: line.startswith('frontpage_featured_teaser_length'),config))[0].replace('frontpage_featured_teaser_length: "','').replace('"','').replace('\n','')
         header_nav_bar_links = list(filter(lambda line: line.startswith('header_nav_bar_links'),config))[0].replace('header_nav_bar_links: "','').replace('"','').replace('\n','').split(',')
         navlinks = ''
-        for header_nav_bar_link in header_nav_bar_links:
-            link = header_nav_bar_link.split('(')[0]
-            link_name = header_nav_bar_link.split('(')[1].replace(')','')
-            navlinks += '<li><a href="'+link +'">'+link_name + '</a></li>'
+        for header_nav_bar_link in header_nav_bar_links:            
+            navlinks += '<li>'+header_nav_bar_link+'</li>'
         template = template.replace('header_nav_bar_links',navlinks)
         blogroll = get_blogroll_posts()
         blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
+
+        template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
+        
+
         template = template.replace('sidebar_recent_post_1_url', blogroll[0][0])
         template = template.replace('sidebar_recent_post_1_title', blogroll[0][1]) 
         template = template.replace('sidebar_recent_post_1_image', blogroll[0][3])
