@@ -6,11 +6,36 @@ from resizeimage import resizeimage
 import pprint
 from datetime import datetime as dt
 import random
+import shutil
 from shutil import copyfile
 
+
+def copy_theme_files():
+    config_values = load_values_from_config()
+    for config_value in config_values:
+        global themefolder 
+        if config_value[0] == 'themefolder':
+            themefolder = config_value[1]
+
+    themefolder = os.path.join(os.getcwd(),themefolder)
+    deploy_folder = os.path.join(os.getcwd(),'site')
+    if os.path.exists(deploy_folder):
+        shutil.rmtree(deploy_folder, ignore_errors=True)
+        
+    for src_dir, dirs, files in os.walk(themefolder):
+        dst_dir = src_dir.replace(themefolder, deploy_folder, 1)
+        if not os.path.exists(dst_dir):
+            os.makedirs(dst_dir)
+        for file_ in files:
+            src_file = os.path.join(src_dir, file_)
+            dst_file = os.path.join(dst_dir, file_)
+            if os.path.exists(dst_file):
+                os.remove(dst_file)
+            shutil.copy (src_file, dst_dir)
+
 def generate_recent_posts_widget(blogroll):
-    if os.path.isfile(os.path.join(os.getcwd(), 'site/templates/recent_posts_sidebar.html')):
-        with open(os.path.join(os.getcwd(), 'site/templates/recent_posts_sidebar.html'),'r') as template_file:
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/recent_posts_sidebar.html')):
+        with open(os.path.join(os.getcwd(), themefolder,'templates/recent_posts_sidebar.html'),'r') as template_file:
             recent_posts_template = template_file.read()
             all_posts = ''
             for post in blogroll:
@@ -24,14 +49,14 @@ def generate_recent_posts_widget(blogroll):
         return ''
 
 def generate_sidebar_widget(blogroll):    
-    if os.path.isfile(os.path.join(os.getcwd(), 'site/templates/sidebar.html')):
-        with open(os.path.join(os.getcwd(), 'site/templates/sidebar.html'),'r') as template_file:
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/sidebar.html')):
+        with open(os.path.join(os.getcwd(), themefolder,'templates/sidebar.html'),'r') as template_file:
             sidebar_widget_template = template_file.read()
             return sidebar_widget_template.replace('sidebar_recent_post_component',generate_recent_posts_widget(blogroll))
 
 
 def generate_related_posts_widget(related_posts):
-    with open(os.path.join(os.getcwd(), 'site/templates/related_posts.html'),'r') as template_file:
+    with open(os.path.join(os.getcwd(), themefolder,'templates/related_posts.html'),'r') as template_file:
         post_template = template_file.read()
         all_posts = ''
         for post in related_posts:
@@ -182,7 +207,11 @@ def get_related_posts(current_post_title):
     return random.sample(all_posts,3)
 
 #main
-    
+
+copy_theme_files()
+
+
+
 for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
     for file in files:
         if file.endswith('.md') or file.endswith('.markdown'):
@@ -213,7 +242,7 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
 
                 #related posts 
 
-                with open(os.path.join(os.path.join(os.getcwd(), 'site','templates','post-sidebar.html')), 'r') as template_file:
+                with open(os.path.join(os.path.join(os.getcwd(), themefolder,'templates','post-sidebar.html')), 'r') as template_file:
                     related_posts = get_related_posts(current_post_title)                
                     template = template_file.read()
                     template = template.replace('post_title', current_post_title)
@@ -245,7 +274,7 @@ for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
                         template_file.close                        
     break
 #todo fill index.html with posts
-with open(os.path.join(os.getcwd(), 'site/templates/index.html'),'r') as template_file:
+with open(os.path.join(os.getcwd(), themefolder,'templates/index.html'),'r') as template_file:
     template = template_file.read()
     with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
         config = config.readlines()
