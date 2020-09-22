@@ -214,7 +214,7 @@ def generate_blogroll_widget():
             recent_posts_template = template_file.read()
             all_posts = ''
             blogroll = get_blogroll_posts()
-            blogroll_without_featured = sorted(blogroll,key=lambda x: x[4])[0:len(blogroll)-1]
+            blogroll_without_featured = sorted(blogroll,key=lambda x: x[4])[0:len(blogroll)-2]
 
             for post in sorted(blogroll_without_featured,key=lambda x: x[4],reverse=True):
                 post_template = recent_posts_template.replace('blog_loop_post_url',post[0])
