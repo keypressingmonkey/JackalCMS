@@ -1,5 +1,5 @@
 # About Jackal
-Jackal is a website CMS based on Python that was inspired by Jekyll's great concept of creating blazing fast static HTML sites from Markdown files.
+Jackal is a website CMS based on Python that was inspired by Jekyll's great concept of creating blazing fast static HTML sites from Markdown files. See the result in action [here](https://compassionate-hawking-9b2eb5.netlify.app/)
 
 Here is a Jackal fighting a Python to see how the development process looked like.
 https://www.youtube.com/watch?v=JgKN3BuvC3E
