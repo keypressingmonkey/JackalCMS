@@ -129,17 +129,24 @@ def load_values_from_config():
 
 def resize_and_optimize(imagefile,imagename:str,subfolder: str,width:int,shall_optimize:bool,optimizationgrade:int):
     img = resizeimage.resize_width(imagefile, width, validate=False)
-    path = os.path.join(os.path.dirname(os.path.dirname( __file__ )),'site','images',subfolder,imagename)
-    img.save(path,optimize=shall_optimize, quality=optimizationgrade)
+    path = os.path.join(os.path.dirname(os.path.dirname( __file__ )),'site','images',subfolder)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    img.save(os.path.join(path,imagename),optimize=shall_optimize, quality=optimizationgrade)
 
 def optimize_images():
-    for root,dirs,file in os.walk(os.path.join(os.getcwd(),'site','images')):
+    for root,dirs,file in os.walk(os.path.join(os.getcwd(),themefolder,'images')):
         for image in file:
             if (image.endswith('.jpg') or image.endswith('.png')):
                 original_image = Image.open(os.path.join(root,image))
-                test = os.path.join(os.getcwd(),root,'backup',image)
-                if not os.path.isfile(os.path.join(os.getcwd(),root,'backup',image)):
-                    original_image.save(os.path.join(os.getcwd(),root,'backup',image))
+                test = os.path.join(os.getcwd(),root,'backup',image)            
+
+
+                backup_folder = os.path.join(os.getcwd(),root,'backup')
+                if not os.path.isfile(backup_folder):
+                    if not os.path.exists(backup_folder):
+                        os.makedirs(backup_folder)
+                    original_image.save(os.path.join(backup_folder,image))
                 img = resize_and_optimize(original_image,image,'blogroll',760,True,80)
                 img = resize_and_optimize(original_image,image,'featured',760,True,80)
                 img = resize_and_optimize(original_image,image,'thumbs',80,True,80)
@@ -281,9 +288,10 @@ def generate_post_pages():
             if file.endswith('.md') or file.endswith('.markdown'):
                 with open(os.path.join(root, file)) as template:
                     post_text = template.read()  # this way we get to separate frontmatter from post content
-                    post = generate_post_from_Markdown(post_text)       
-                    current_post_title = post[0]
-                    current_post_subtitle = post[1]
+                    post = generate_post_from_Markdown(post_text)     
+                    current_post_url = post[0]
+                    current_post_title = post[1]
+                    current_post_subtitle = post[2]
                     current_post_image = post[3]
                     current_post_date = post[4]
                     current_post_content = convert_markdown_to_html(post[5])
@@ -303,7 +311,7 @@ def generate_post_pages():
 
                     #related posts 
 
-                    with open(os.path.join(os.path.join(os.getcwd(), themefolder,'templates','post-sidebar.html')), 'r') as template_file:
+                    with open(os.path.join(os.path.join(os.getcwd(), themefolder,'templates','single_post.html')), 'r') as template_file:
                         related_posts = get_related_posts(current_post_title)                
                         template = template_file.read()
                         template = template.replace('post_title', current_post_title)
@@ -319,7 +327,7 @@ def generate_post_pages():
                         template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
                         template = replace_config_data(template)
 
-                        newPostFileName = current_post_title.replace('.md', '.html').replace('.markdown', '.html').replace(' ', '_')
+                        newPostFileName = current_post_url
                         with open(os.path.join(os.getcwd(), 'site', newPostFileName), 'w') as newpost:
                             newpost.write(template)
                             newpost.close
@@ -327,7 +335,7 @@ def generate_post_pages():
         break
 
 def generate_index_page():
-    with open(os.path.join(os.getcwd(), themefolder,'templates/index.html'),'r') as template_file:
+    with open(os.path.join(os.getcwd(), themefolder,'templates','index.html'),'r') as template_file:
         template = template_file.read()
         with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
             config = config.readlines()       
