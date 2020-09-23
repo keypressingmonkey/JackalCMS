@@ -106,15 +106,26 @@ def get_frontmatter_values(frontmatter:str):
     return frontmattervalues
 
 def load_values_from_config(): 
+    global config_values 
+    global themefolder 
     with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
-        global config_values 
         config_values = []
         for line in config.readlines():
             if(re.match(r'(.*?):(.*?)',line)):
                 name = re.match(r'(.*?):(.*?)',line).group(1)
                 value = re.match(r'(.*?):.*?"(.*?)"($|\n)',line).group(2)
                 config_values.append([name, value])
-        return config_values
+                for config_value in config_values:
+                    if config_value[0] == 'themefolder':
+                        themefolder = os.path.join(os.getcwd(),config_value[1])
+
+    with open(os.path.join(os.getcwd(), themefolder,'templates','themeConfig.md')) as theme_config:
+        for line in theme_config.readlines():
+            if(re.match(r'(.*?):(.*?)',line)):
+                name = re.match(r'(.*?):(.*?)',line).group(1)
+                value = re.match(r'(.*?):.*?"(.*?)"($|\n)',line).group(2)
+                config_values.append([name, value])
+    return config_values
 
 def resize_and_optimize(imagefile,imagename:str,subfolder: str,width:int,shall_optimize:bool,optimizationgrade:int):
     img = resizeimage.resize_width(imagefile, width, validate=False)
