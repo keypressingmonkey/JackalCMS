@@ -12,4 +12,6 @@ This is all your test content
 ## heading 3
 This is all your test content [this is a regular link](https://github.com/)
 # heading 2
-This is all your test content ![imagealt](https://imagelink.com)
+This is all your test content ![imagealt](/images/insta-01.jpg)
+# heading 2
+This is all your test content [![imagealt](themefolder/images/insta-01.jpg)](https://github.com)
