@@ -21,4 +21,8 @@ This will change in a future release as I add more themes but right now if you w
 To use just create an empty repository and place the CMS and Arwyn (or any other upcoming theme folders) into it. Run the CreatePostFromMarkdown.py file and push the generated site/ directory to your master branch to have it built by Netlify. 
 
 # Upcoming features
-
+- ~~Make images as links possible~~ Done!
+- ~~Add theme specific configuration files~~ Done!
+- implement new (free!) themes and adapt them for rapid prototyping 
+- Make image optimization and resizing configurable per theme
+- Add support for Markdown lists
