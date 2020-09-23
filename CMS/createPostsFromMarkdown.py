@@ -52,6 +52,21 @@ def copy_theme_files():
             if os.path.exists(dst_file):
                 os.remove(dst_file)
             shutil.copy (src_file, dst_dir)
+    
+def copy_images_from_cms_to_site():
+    cms_images_folder = os.path.join(os.getcwd(),'cms','images')
+    deploy_folder = os.path.join(os.getcwd(),'site','images')
+    
+    for src_dir, dirs, files in os.walk(cms_images_folder):
+        dst_dir = src_dir.replace(cms_images_folder, deploy_folder, 1)
+        if not os.path.exists(dst_dir):
+            os.makedirs(dst_dir)
+        for file_ in files:
+            src_file = os.path.join(src_dir, file_)
+            dst_file = os.path.join(dst_dir, file_)
+            if os.path.exists(dst_file):
+                os.remove(dst_file)
+            shutil.copy (src_file, dst_dir)
 
 def generate_recent_posts_widget(blogroll):
     if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/recent_posts_sidebar.html')):
@@ -135,18 +150,11 @@ def resize_and_optimize(imagefile,imagename:str,subfolder: str,width:int,shall_o
     img.save(os.path.join(path,imagename),optimize=shall_optimize, quality=optimizationgrade)
 
 def optimize_images():
-    for root,dirs,file in os.walk(os.path.join(os.getcwd(),themefolder,'images')):
+    for root,dirs,file in os.walk(os.path.join(os.getcwd(),'site','images')):
         for image in file:
             if (image.endswith('.jpg') or image.endswith('.png')):
                 original_image = Image.open(os.path.join(root,image))
-                test = os.path.join(os.getcwd(),root,'backup',image)            
-
-
-                backup_folder = os.path.join(os.getcwd(),root,'backup')
-                if not os.path.isfile(backup_folder):
-                    if not os.path.exists(backup_folder):
-                        os.makedirs(backup_folder)
-                    original_image.save(os.path.join(backup_folder,image))
+             
                 img = resize_and_optimize(original_image,image,'blogroll',760,True,80)
                 img = resize_and_optimize(original_image,image,'featured',760,True,80)
                 img = resize_and_optimize(original_image,image,'thumbs',80,True,80)
@@ -240,6 +248,7 @@ def generate_blogroll_widget():
                 post_template = post_template.replace('blog_loop_post_title',post[1])
                 post_template = post_template.replace('blog_loop_post_subtitle',post[2])
                 post_template = post_template.replace('blog_loop_post_image',post[3])
+                post_template = post_template.replace('blog_loop_post_date',post[4])
                 post_template = post_template.replace('blog_loop_post_teaser_text',convert_markdown_to_html(post[6][0:int(get_single_value_from_config('frontpage_teaser_length'))]+'......'))
                 all_posts += post_template
             
@@ -261,6 +270,7 @@ def generate_featured_post_widget():
                 post_template = post_template.replace('featured_post_title',post[1])
                 post_template = post_template.replace('featured_post_subtitle',post[2])
                 post_template = post_template.replace('featured_post_image',post[3])
+                post_template = post_template.replace('featured_post_date',post[4])
                 post_template = post_template.replace('featured_post_teaser_text',convert_markdown_to_html(post[6][0:int(get_single_value_from_config('frontpage_featured_teaser_length'))]+'......'))
                 all_posts += post_template
             
@@ -316,6 +326,8 @@ def generate_post_pages():
                         template = template_file.read()
                         template = template.replace('post_title', current_post_title)
                         template = template.replace('post_subtitle', current_post_subtitle)
+                        template = template.replace('post_date', current_post_date)
+                        template = template.replace('post_image', current_post_image)
                         
                         template = template.replace('previous_post_url', previous_post_url)
                         template = template.replace('next_post_url', next_post_url)
@@ -352,6 +364,7 @@ def generate_index_page():
             template = template.replace('featured_post_title', blogroll[0][1])
             template = template.replace('featured_post_subtitle', blogroll[0][2])
             template = template.replace('featured_post_image',blogroll[0][3])
+            template = template.replace('featured_post_date',blogroll[0][3])
             template = template.replace('featured_post_teaser_text',blogroll[0][5][:int(frontpage_featured_teaser_length)])
 
             template = template.replace('blog_roll',generate_blogroll_widget())
@@ -364,6 +377,7 @@ def generate_index_page():
 
 def main():
     copy_theme_files()
+    copy_images_from_cms_to_site()
     generate_post_pages()
     generate_index_page()
     optimize_images()
