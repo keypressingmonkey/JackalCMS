@@ -1,6 +1,9 @@
 # About Jackal
 Jackal is a website CMS based on Python that was inspired by Jekyll's great concept of creating blazing fast static HTML sites from Markdown files.
 
+Here is a Jackal fighting a Python to see how the development process looked like.
+https://www.youtube.com/watch?v=JgKN3BuvC3E
+
 Features:
  - Works with _any_ HTML template (you just place the needed variables inside your index.html and single post templates)
  - Automatic image optimization using PIL (will also generate the right thumbnail sizes for featured posts, sidebar thumbnails etc.)
