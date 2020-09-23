@@ -225,7 +225,8 @@ def generate_blogroll_widget():
             recent_posts_template = template_file.read()
             all_posts = ''
             blogroll = get_blogroll_posts()
-            blogroll_without_featured = sorted(blogroll,key=lambda x: x[4])[0:len(blogroll)-2]
+            number_of_featured_posts = int(get_single_value_from_config('number_of_featured_posts'))
+            blogroll_without_featured = sorted(blogroll,key=lambda x: x[4])[0:len(blogroll)-number_of_featured_posts]
 
             for post in sorted(blogroll_without_featured,key=lambda x: x[4],reverse=True):
                 post_template = recent_posts_template.replace('blog_loop_post_url',post[0])
@@ -245,9 +246,10 @@ def generate_featured_post_widget():
             recent_posts_template = template_file.read()
             all_posts = ''
             blogroll = get_blogroll_posts()
-            blogroll_featured = sorted(blogroll,key=lambda x: x[4],reverse=True)[len(blogroll)-3:len(blogroll)]
+            number_of_featured_posts = int(get_single_value_from_config('number_of_featured_posts'))
+            blogroll_featured = sorted(blogroll,key=lambda x: x[4],reverse=False)[len(blogroll)-number_of_featured_posts:len(blogroll)]
 
-            for post in sorted(blogroll_featured,key=lambda x: x[4],reverse=True):
+            for post in blogroll_featured:
                 post_template = recent_posts_template.replace('featured_post_url',post[0])
                 post_template = post_template.replace('featured_post_title',post[1])
                 post_template = post_template.replace('featured_post_subtitle',post[2])

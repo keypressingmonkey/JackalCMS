@@ -13,5 +13,4 @@ frontpage_teaser_length: "100"
 frontpage_featured_teaser_length: "200"
 header_nav_bar_links: "'<li><a href="https://YouTube.com">YouTube</a></li>,<li><a href="https://twitter.com">Twitter</a></li>"
 themefolder: "arwyn"
-number_of_featured_posts: "3"
 ---
