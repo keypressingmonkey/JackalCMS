@@ -1,0 +1,9 @@
+- https://colorlib.com/preview/#readit
+- https://html5up.net/massively
+- https://html5up.net/future-imperfect
+- https://templated.co/
+- https://www.w3schools.com/w3css/tryit.asp?filename=tryw3css_templates_blog&stacked=h
+- https://www.w3schools.com/w3css/tryw3css_templates_cafe.htm#menu (only has single-blog page but great looking layout and typography. Might be worth adapting)
+- https://html5up.net/strongly-typed
+- https://html5up.net/editorial
+- https://preview.themeforest.net/item/emma-personal-portfolio/full_screen_preview/28512070?_ga=2.101289921.1763499425.1600864007-1356272961.1598803388
