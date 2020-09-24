@@ -68,11 +68,13 @@ def copy_images_from_cms_to_site():
                 os.remove(dst_file)
             shutil.copy (src_file, dst_dir)
 
-def generate_recent_posts_widget(blogroll):
+def generate_recent_posts_widget():
     if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/recent_posts_sidebar.html')):
         with open(os.path.join(os.getcwd(), themefolder,'templates/recent_posts_sidebar.html'),'r') as template_file:
             recent_posts_template = template_file.read()
             all_posts = ''
+            blogroll = get_blogroll_posts()
+            blogroll = blogroll[0:int(get_single_value_from_config('number_of_recent_blog_posts_in_sidebar'))]
             for post in blogroll:
                 temp = recent_posts_template
                 temp = temp.replace('recent_post_url', post[0])
@@ -87,7 +89,7 @@ def generate_sidebar_widget(blogroll):
     if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/sidebar.html')):
         with open(os.path.join(os.getcwd(), themefolder,'templates/sidebar.html'),'r') as template_file:
             sidebar_widget_template = template_file.read()
-            return sidebar_widget_template.replace('sidebar_recent_post_component',generate_recent_posts_widget(blogroll))
+            return sidebar_widget_template.replace('sidebar_recent_post_component',generate_recent_posts_widget())
 
 def generate_related_posts_widget(related_posts):
     with open(os.path.join(os.getcwd(), themefolder,'templates/related_posts.html'),'r') as template_file:
@@ -295,14 +297,15 @@ def chunks(lst, n:int): #stolen from https://stackoverflow.com/questions/312443/
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-def get_paginated_posts(blogroll):    
+def get_paginated_posts():    
     all_pages = []
-    blogroll = get_blogroll_posts()
-    blogroll_split_into_chunks = chunks(blogroll,int(get_single_value_from_config('number_of_blog_posts_in_blogroll')))
+    blogroll = sort_posts_by_date(get_blogroll_posts())
+    batch_size = int(get_single_value_from_config('number_of_blog_posts_in_blogroll'))
+    blogroll_split_into_chunks = list(chunks(blogroll,batch_size))
     for paginated_block in  blogroll_split_into_chunks:
         all_pages.append(sorted(paginated_block,key=lambda x: x[4],reverse=True))
         
-    return sorted(all_pages,reverse=True)
+    return sorted(all_pages,key=lambda x: x[0][4],reverse=True)
 
 def generate_post_pages():
     for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
@@ -361,17 +364,22 @@ def generate_pagination_widget():
     #todo generate pagination buttons and numbers based on templates
     test = 'test'
 
-def generate_pagination_pages(paginated_posts):
+def sort_posts_by_date(posts,descending=True):
+    if descending:
+        return sorted(posts,key=lambda x: dt.strptime(x[4], "%Y-%m-%d"),reverse=True)
+    else:
+        return sorted(posts,key=lambda x: dt.strptime(x[4], "%Y-%m-%d"),reverse=False)
+
+def generate_pagination_pages():
     
         frontpage_featured_teaser_length = get_single_value_from_config('frontpage_featured_teaser_length')
-
-        for index, pagination_page in enumerate(paginated_posts):
+        pages = get_paginated_posts()
+        for index, pagination_page in enumerate(pages):
             with open(os.path.join(os.getcwd(), themefolder,'templates','index.html'),'r') as template_file:
                 template = template_file.read()
-                paginated_posts = sorted(paginated_posts,key=lambda x: x[index][4],reverse = True)[index]
             
 
-                template = template.replace('sidebar_component', generate_sidebar_widget(paginated_posts))          
+                template = template.replace('sidebar_component', generate_sidebar_widget(pagination_page))          
                 
                 template = template.replace('featured_post_url', pagination_page[0][0])
                 template = template.replace('featured_post_title', pagination_page[0][1])
@@ -401,8 +409,7 @@ def main():
     copy_theme_files()
     copy_images_from_cms_to_site()
     generate_post_pages()
-    paginated_posts = get_paginated_posts(get_blogroll_posts())
-    generate_pagination_pages(paginated_posts)
+    generate_pagination_pages()
     optimize_images()
 
 if __name__ == "__main__":
