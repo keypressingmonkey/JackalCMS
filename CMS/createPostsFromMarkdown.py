@@ -101,7 +101,7 @@ def generate_related_posts_widget(related_posts):
             temp = post_template
             temp = temp.replace('blog_post_related_post_url', post[0])
             temp = temp.replace('blog_post_related_post_title', post[1])
-            temp = temp.replace('blog_post_related_post_subtitle', post[2])
+            temp = temp.replace('blog_post_related_post_s', post[2])
             temp = temp.replace('blog_post_related_post_image', post[3])
             all_posts += temp
         return all_posts

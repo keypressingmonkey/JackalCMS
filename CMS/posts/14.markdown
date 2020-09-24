@@ -1,7 +1,7 @@
 ---
 title: "Page Title14"
 subtitle: "page subtitle"
-image: "homepage-07.jpg"
+image: "blog_loop_post_2_image.jpg"
 date: "2015-02-03"
 ---
 beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. 
