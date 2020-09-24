@@ -13,6 +13,7 @@ Features:
   - Currently works with the basic Markdown elements (images, links, headings and regular text).
   - Support for drafts inside the CMS/posts/drafts folder, just take the files out into the main directory as soon as you're done with writing
  - Creates an automatic deploy of your theme chosen in your config and pushes it to the site/ directory for easy setup with Netlify
+ ![](cms/images/2020-09-24-15-36-54.png)
   
 # Installation and Setup
 The CMS itself is free to use in your own projects but I worked off of a paid HTML template called [Arwyn](https://themeforest.net/item/arwyn-creative-personal-html-template/7698147).
@@ -23,6 +24,8 @@ To use just create an empty repository and place the CMS and Arwyn (or any other
 For configuration there are two relevant files: 
 - cms/siteConfig.md for everything that is configured globally
 - THEMEFOLDER/themeConfig.md for everything that is specific to the theme like image dimensions and number of featured posts. 
+
+Bonus tip: Use this image-to-Markdown poster plugin for VS Code and make your life a lot easier: https://marketplace.visualstudio.com/items?itemName=mushan.vscode-paste-image
 
 # Adapt to your own theme
 
@@ -47,7 +50,7 @@ For the most part you will use the files from your new theme here and place the 
 # Upcoming features
 - ~~Make images as links possible~~ Done!
 - ~~Add theme specific configuration files~~ Done!
-- ~~Add pagination~~
-- implement new (free!) themes and adapt them for rapid prototyping - first one done!
+- ~~Add pagination~~ Partly implemented, use the massively theme to see how it works but the implementation is not yet generic enough to work with any theme. 
+- implement new (free!) themes and adapt them for rapid prototyping - first one done! Just change "arwyn" or "massively" in cms/siteConfig.md and rebuild the site to be amazed.
 - Make image optimization and resizing configurable per theme
 - ~~Add support for Markdown lists~~
