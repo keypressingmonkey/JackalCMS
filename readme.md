@@ -42,6 +42,8 @@ For the most part you will use the files from your new theme here and place the 
 - Anything in either themeConfig.md or cms/siteConfig.md will be auto-replaced if you put the name inside your html templates
 - #todo fill later
 
+- You can also replace sidebar, related posts and recent posts widgets, refer to the index.html in the default folders for further examples of this. This way we can reuse components across multiple html pages which saves a lot of time. 
+
 # Upcoming features
 - ~~Make images as links possible~~ Done!
 - ~~Add theme specific configuration files~~ Done!

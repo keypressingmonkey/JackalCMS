@@ -359,9 +359,43 @@ def generate_post_pages():
                             newpost.close
                             template_file.close   
         break
-def generate_pagination_widget():
+def generate_pagination_widget(current_page_index:int,total_pages:int):
     #todo generate pagination buttons and numbers based on templates
-    test = 'test'
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates','pagination.html')):
+        with open(os.path.join(os.getcwd(), themefolder,'templates','pagination.html'),'r') as template_file:
+            pagination_widget_template = template_file.read()
+
+            #todo make more generic, this right now works specifically with 3 previous/next posts
+            pagination_previous_page_1_number = '1'
+            pagination_previous_page_2_number = '2'if total_pages >1 else '...'
+            pagination_previous_page_3_number = '3'if total_pages >2 else '...'
+            pagination_next_page_1_number = total_pages -2 if total_pages >2 else '...'
+            pagination_next_page_2_number = total_pages -1 if total_pages >1 else '...'
+            pagination_next_page_3_number = total_pages  if total_pages >0 else '...'
+            pagination_previous_page_url = 'page_'+ str(current_page_index)+'.html' if total_pages >1 and current_page_index >1 else '/'
+            pagination_previous_page_1_url = 'index.html'
+            pagination_previous_page_2_url = 'page_2.html' if total_pages >1 else '/'
+            pagination_previous_page_3_url = 'page_3.html' if total_pages >2 else '/'
+            pagination_next_page_1_url = 'page_'+ str(total_pages - 2)+'.html'  if total_pages >3 else '/'
+            pagination_next_page_2_url = 'page_'+ str(total_pages - 1)+'.html'  if total_pages >2 else '/'
+            pagination_next_page_3_url = 'page_'+ str(total_pages )+'.html'
+            pagination_next_page_url = 'page_'+ str(current_page_index+1)+'.html' if total_pages >1 and current_page_index < total_pages else '/'
+
+            pagination_widget_template = pagination_widget_template.replace('pagination_previous_page_1_number',str(pagination_previous_page_1_number))
+            pagination_widget_template = pagination_widget_template.replace('pagination_previous_page_2_number',str(pagination_previous_page_2_number))
+            pagination_widget_template = pagination_widget_template.replace('pagination_previous_page_3_number',str(pagination_previous_page_3_number))
+            pagination_widget_template = pagination_widget_template.replace('pagination_next_page_1_number',str(pagination_next_page_1_number))
+            pagination_widget_template = pagination_widget_template.replace('pagination_next_page_2_number',str(pagination_next_page_2_number))
+            pagination_widget_template = pagination_widget_template.replace('pagination_next_page_3_number',str(pagination_next_page_3_number))
+            pagination_widget_template = pagination_widget_template.replace('pagination_previous_page_url',pagination_previous_page_url)
+            pagination_widget_template = pagination_widget_template.replace('pagination_previous_page_1_url',pagination_previous_page_1_url)
+            pagination_widget_template = pagination_widget_template.replace('pagination_previous_page_2_url',pagination_previous_page_2_url)
+            pagination_widget_template = pagination_widget_template.replace('pagination_previous_page_3_url',pagination_previous_page_3_url)
+            pagination_widget_template = pagination_widget_template.replace('pagination_next_page_1_url',pagination_next_page_1_url)
+            pagination_widget_template = pagination_widget_template.replace('pagination_next_page_2_url',pagination_next_page_2_url)
+            pagination_widget_template = pagination_widget_template.replace('pagination_next_page_3_url',pagination_next_page_3_url)
+            pagination_widget_template = pagination_widget_template.replace('pagination_next_page_url',pagination_next_page_url)
+            return pagination_widget_template
 
 def sort_posts_by_date(posts,descending=True):
     if descending:
@@ -370,7 +404,8 @@ def sort_posts_by_date(posts,descending=True):
         return sorted(posts,key=lambda x: dt.strptime(x[4], "%Y-%m-%d"),reverse=False)
 
 def generate_pagination_pages():
-    
+        global paginated_pages
+        paginated_pages = []
         frontpage_featured_teaser_length = get_single_value_from_config('frontpage_featured_teaser_length')
         pages = get_paginated_posts()
         for index, pagination_page in enumerate(pages):
@@ -394,14 +429,19 @@ def generate_pagination_pages():
                 
                 if index == 0:
                     with open(os.path.join(os.getcwd(), 'site','index.html'), 'w') as indexPage:
+                        paginated_pages.append(index)
+                        template = template.replace('pagination_widget',generate_pagination_widget(index+1,len(pages)))
                         indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
                         indexPage.close
                         
                 else: 
                     with open(os.path.join(os.getcwd(), 'site','page_'+str(index+1) +'.html'), 'w') as indexPage:
+                        template = template.replace('pagination_widget',generate_pagination_widget(index,len(pages)))
+                        paginated_pages.append(index+1)
                         indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
                         indexPage.close
                 template_file.close
+
 
 
 def main():
