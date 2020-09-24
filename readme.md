@@ -50,4 +50,4 @@ For the most part you will use the files from your new theme here and place the 
 - ~~Add pagination~~
 - implement new (free!) themes and adapt them for rapid prototyping - first one done!
 - Make image optimization and resizing configurable per theme
-- Add support for Markdown lists
+- ~~Add support for Markdown lists~~

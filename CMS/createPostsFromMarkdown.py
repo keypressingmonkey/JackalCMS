@@ -8,6 +8,8 @@ from datetime import datetime as dt
 import random
 import shutil
 from shutil import copyfile
+import markdown
+
 
 def replace_config_data(template):
     config_values = load_values_from_config()
@@ -104,7 +106,7 @@ def generate_related_posts_widget(related_posts):
             all_posts += temp
         return all_posts
 
-def generate_post_from_Markdown(post_text):
+def generate_post_from_Markdown(post_text):    
     frontmatter = re.match(r'(---)((.|\n)*?)(---)', post_text).group(2)
     content = re.sub(r'(---)((.|\n)*?)(---)', '', post_text).lstrip('\n')
     teaser = re.match(r'((.|\n)*?)#', content).group(1).lstrip('\n')
@@ -166,19 +168,7 @@ def optimize_images():
         break #this break makes the os.walk non recursive so we don't optimize the optimized (quid opimizos optimizadan)
 
 def convert_markdown_to_html(value):
-    result = ''
-    for line in value.split('\n'):
-        line = re.sub(r'(### )(.*?)($|\n)', r'<h4>\2</h4>\n', line)
-        line = re.sub(r'(## )(.*?)($|\n)', r'<h3>\2</h3>\n', line)
-        line = re.sub(r'(# )(.*?)($|\n)', r'<h2>\2</h2>\n', line)
-        line = re.sub(r'!\[(.*?)\]\((.*?)\)', r'<img src="\2" alt="\1" />', line)
-        line = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', line)
-        # line = re.sub(r'(\n)(.*?)($|\n)', r'\n<p>\2</p>\n', line)
-        if not line.startswith('<'):
-            line = re.sub(r'(^)(.*?)($|\n)', r'<p>\2</p>\n', line)
-        # if not '<' in line:
-        #     line = '<p>'+line+ '</p>'
-        result += line
+    result = markdown.markdown(value)
     return result
 
 def get_previous_post(current_post_date):
