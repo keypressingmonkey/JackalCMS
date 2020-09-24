@@ -281,7 +281,7 @@ def get_related_posts(current_post_title):
         break
     return random.sample(all_posts,3)
 
-def chunks(lst, n:int): #stolen from https://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks
+def split_list_into_chunks(lst, n:int): #stolen from https://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
@@ -290,7 +290,7 @@ def get_paginated_posts():
     all_pages = []
     blogroll = sort_posts_by_date(get_blogroll_posts())
     batch_size = int(get_single_value_from_config('number_of_blog_posts_in_blogroll'))
-    blogroll_split_into_chunks = list(chunks(blogroll,batch_size))
+    blogroll_split_into_chunks = list(split_list_into_chunks(blogroll,batch_size))
     for paginated_block in  blogroll_split_into_chunks:
         all_pages.append(sort_posts_by_date(paginated_block))
         
