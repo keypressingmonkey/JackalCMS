@@ -73,7 +73,7 @@ def generate_recent_posts_widget():
         with open(os.path.join(os.getcwd(), themefolder,'templates/recent_posts_sidebar.html'),'r') as template_file:
             recent_posts_template = template_file.read()
             all_posts = ''
-            blogroll = get_blogroll_posts()
+            blogroll = sort_posts_by_date(get_blogroll_posts())
             blogroll = blogroll[0:int(get_single_value_from_config('number_of_recent_blog_posts_in_sidebar'))]
             for post in blogroll:
                 temp = recent_posts_template
