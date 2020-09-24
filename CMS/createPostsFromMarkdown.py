@@ -217,7 +217,7 @@ def get_next_post(current_post_date):
         break
     if all_next_posts:
         # this sorts by date and returns the lowest with a higher date than the mainw, aka the next post
-        return min(sort_posts_by_date(all_next_posts))
+        return sort_posts_by_date(all_next_posts,False)[0]
     else:
         return(['/', 'Homepage', '', 'default.jpg', ''])
 
