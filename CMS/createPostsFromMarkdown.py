@@ -197,7 +197,7 @@ def get_previous_post(current_post_date):
         break
     if all_previous_posts:
         # this sorts by date and returns the highest, aka the previous post
-        return max(sorted(all_previous_posts, key=lambda tup: tup[4]))
+        return max(sort_posts_by_date(all_previous_posts))
     else:
         return(['/', 'Homepage', '', 'default.jpg', ''])
 
@@ -232,8 +232,7 @@ def get_blogroll_posts():
                     post = generate_post_from_Markdown(post_text)                    
                     all_posts.append(post)
         break
-    sorted_list = sorted(all_posts, key=lambda tup: tup[4])
-    # here we sort by date and skip the highest to start the blogroll with the first nonfeatured post
+    sorted_list = sort_posts_by_date(all_posts)
     return sorted_list
 
 def generate_blogroll_widget(paginated_posts):
@@ -242,9 +241,9 @@ def generate_blogroll_widget(paginated_posts):
             recent_posts_template = template_file.read()
             all_posts = ''
             number_of_featured_posts = int(get_single_value_from_config('number_of_featured_posts'))
-            blogroll_without_featured = sorted(paginated_posts,key=lambda x: x[4])[0:len(paginated_posts)-number_of_featured_posts]
+            blogroll_without_featured = sort_posts_by_date(paginated_posts)[number_of_featured_posts:len(paginated_posts)]
 
-            for post in sorted(blogroll_without_featured,key=lambda x: x[4],reverse=True):
+            for post in sort_posts_by_date(blogroll_without_featured):
                 post_template = recent_posts_template.replace('blog_loop_post_url',post[0])
                 post_template = post_template.replace('blog_loop_post_title',post[1])
                 post_template = post_template.replace('blog_loop_post_subtitle',post[2])
@@ -263,7 +262,7 @@ def generate_featured_post_widget(paginated_posts):
             recent_posts_template = template_file.read()
             all_posts = ''
             number_of_featured_posts = int(get_single_value_from_config('number_of_featured_posts'))
-            blogroll_featured = sorted(paginated_posts,key=lambda x: x[4],reverse=False)[len(paginated_posts)-number_of_featured_posts:len(paginated_posts)]
+            blogroll_featured = sort_posts_by_date(paginated_posts,False)[len(paginated_posts)-number_of_featured_posts:len(paginated_posts)]
 
             for post in blogroll_featured:
                 post_template = recent_posts_template.replace('featured_post_url',post[0])
