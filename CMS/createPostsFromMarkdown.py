@@ -197,7 +197,7 @@ def get_previous_post(current_post_date):
         break
     if all_previous_posts:
         # this sorts by date and returns the highest, aka the previous post
-        return max(sort_posts_by_date(all_previous_posts))
+        return sort_posts_by_date(all_previous_posts,True)[0]
     else:
         return(['/', 'Homepage', '', 'default.jpg', ''])
 
@@ -217,7 +217,7 @@ def get_next_post(current_post_date):
         break
     if all_next_posts:
         # this sorts by date and returns the lowest with a higher date than the mainw, aka the next post
-        return min(sorted(all_next_posts, key=lambda tup: tup[4]))
+        return min(sort_posts_by_date(all_next_posts))
     else:
         return(['/', 'Homepage', '', 'default.jpg', ''])
 
@@ -302,7 +302,7 @@ def get_paginated_posts():
     batch_size = int(get_single_value_from_config('number_of_blog_posts_in_blogroll'))
     blogroll_split_into_chunks = list(chunks(blogroll,batch_size))
     for paginated_block in  blogroll_split_into_chunks:
-        all_pages.append(sorted(paginated_block,key=lambda x: x[4],reverse=True))
+        all_pages.append(sort_posts_by_date(paginated_block))
         
     return sorted(all_pages,key=lambda x: x[0][4],reverse=True)
 
@@ -349,7 +349,7 @@ def generate_post_pages():
                         related_posts_widget = generate_related_posts_widget(get_related_posts(current_post_title))
                         template = template.replace('related_posts_widget',related_posts_widget)
                         blogroll = get_blogroll_posts()
-                        blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
+                        blogroll = sort_posts_by_date(blogroll)
                         template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
                         template = replace_config_data(template)
 

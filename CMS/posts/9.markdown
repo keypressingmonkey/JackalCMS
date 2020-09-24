@@ -2,7 +2,7 @@
 title: "Page Title9"
 subtitle: "page subtitle"
 image: "homepage-07.jpg"
-date: "2014-12-29"
+date: "2015-01-29"
 ---
 beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. 
 # heading 2
