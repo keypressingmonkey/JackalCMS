@@ -1,0 +1,15 @@
+---
+title: "Page Title17"
+subtitle: "page subtitle"
+image: "homepage-07.jpg"
+date: "2015-01-06"
+---
+beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. 
+# heading 2
+This is all your test content
+# heading 2
+This is all your test content
+## heading 3
+This is all your test content [this is a regular link](https://github.com/)
+# heading 2
+This is all your test content ![imagealt](https://imagelink.com)

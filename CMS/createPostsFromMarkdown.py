@@ -234,14 +234,13 @@ def get_blogroll_posts():
     # here we sort by date and skip the highest to start the blogroll with the first nonfeatured post
     return sorted_list
 
-def generate_blogroll_widget():
+def generate_blogroll_widget(paginated_posts):
     if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/blogroll_post.html')):
         with open(os.path.join(os.getcwd(), themefolder,'templates/blogroll_post.html'),'r') as template_file:
             recent_posts_template = template_file.read()
             all_posts = ''
-            blogroll = get_blogroll_posts()
             number_of_featured_posts = int(get_single_value_from_config('number_of_featured_posts'))
-            blogroll_without_featured = sorted(blogroll,key=lambda x: x[4])[0:len(blogroll)-number_of_featured_posts]
+            blogroll_without_featured = sorted(paginated_posts,key=lambda x: x[4])[0:len(paginated_posts)-number_of_featured_posts]
 
             for post in sorted(blogroll_without_featured,key=lambda x: x[4],reverse=True):
                 post_template = recent_posts_template.replace('blog_loop_post_url',post[0])
@@ -256,14 +255,13 @@ def generate_blogroll_widget():
     else:
         return ''
 
-def generate_featured_post_widget():
+def generate_featured_post_widget(paginated_posts):
     if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/post_featured.html')):
         with open(os.path.join(os.getcwd(), themefolder,'templates/post_featured.html'),'r') as template_file:
             recent_posts_template = template_file.read()
             all_posts = ''
-            blogroll = get_blogroll_posts()
             number_of_featured_posts = int(get_single_value_from_config('number_of_featured_posts'))
-            blogroll_featured = sorted(blogroll,key=lambda x: x[4],reverse=False)[len(blogroll)-number_of_featured_posts:len(blogroll)]
+            blogroll_featured = sorted(paginated_posts,key=lambda x: x[4],reverse=False)[len(paginated_posts)-number_of_featured_posts:len(paginated_posts)]
 
             for post in blogroll_featured:
                 post_template = recent_posts_template.replace('featured_post_url',post[0])
@@ -291,6 +289,20 @@ def get_related_posts(current_post_title):
                         all_posts.append(post)
         break
     return random.sample(all_posts,3)
+
+def chunks(lst, n:int): #stolen from https://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+def get_paginated_posts(blogroll):    
+    all_pages = []
+    blogroll = get_blogroll_posts()
+    blogroll_split_into_chunks = chunks(blogroll,int(get_single_value_from_config('number_of_blog_posts_in_blogroll')))
+    for paginated_block in  blogroll_split_into_chunks:
+        all_pages.append(sorted(paginated_block,key=lambda x: x[4],reverse=True))
+        
+    return sorted(all_pages,reverse=True)
 
 def generate_post_pages():
     for root, dirs, files in os.walk(os.path.join(os.getcwd(), 'cms','posts')):
@@ -345,41 +357,52 @@ def generate_post_pages():
                             newpost.close
                             template_file.close   
         break
+def generate_pagination_widget():
+    #todo generate pagination buttons and numbers based on templates
+    test = 'test'
 
-def generate_index_page():
-    with open(os.path.join(os.getcwd(), themefolder,'templates','index.html'),'r') as template_file:
-        template = template_file.read()
-        with open(os.path.join(os.getcwd(), 'cms/siteConfig.md')) as config:
-            config = config.readlines()       
-            frontpage_teaser_length = list(filter(lambda line: line.startswith('frontpage_teaser_length'),config))[0].replace('frontpage_teaser_length: "','').replace('"','').replace('\n','')
-            frontpage_featured_teaser_length = list(filter(lambda line: line.startswith('frontpage_featured_teaser_length'),config))[0].replace('frontpage_featured_teaser_length: "','').replace('"','').replace('\n','')
-        
-            blogroll = get_blogroll_posts()
-            blogroll = sorted(blogroll,key=lambda x: x[4],reverse = True)
+def generate_pagination_pages(paginated_posts):
+    
+        frontpage_featured_teaser_length = get_single_value_from_config('frontpage_featured_teaser_length')
 
-            template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
+        for index, pagination_page in enumerate(paginated_posts):
+            with open(os.path.join(os.getcwd(), themefolder,'templates','index.html'),'r') as template_file:
+                template = template_file.read()
+                paginated_posts = sorted(paginated_posts,key=lambda x: x[index][4],reverse = True)[index]
             
-            
-            template = template.replace('featured_post_url', blogroll[0][0])
-            template = template.replace('featured_post_title', blogroll[0][1])
-            template = template.replace('featured_post_subtitle', blogroll[0][2])
-            template = template.replace('featured_post_image',blogroll[0][3])
-            template = template.replace('featured_post_date',blogroll[0][3])
-            template = template.replace('featured_post_teaser_text',blogroll[0][5][:int(frontpage_featured_teaser_length)])
 
-            template = template.replace('blog_roll',generate_blogroll_widget())
-            template = template.replace('featured_post_widget',generate_featured_post_widget())
-            template = replace_config_data(template)
-            with open(os.path.join(os.getcwd(), 'site','index.html'), 'w') as indexPage:
-                indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
-                indexPage.close
+                template = template.replace('sidebar_component', generate_sidebar_widget(paginated_posts))          
+                
+                template = template.replace('featured_post_url', pagination_page[0][0])
+                template = template.replace('featured_post_title', pagination_page[0][1])
+                template = template.replace('featured_post_subtitle', pagination_page[0][2])
+                template = template.replace('featured_post_image',pagination_page[0][3])
+                template = template.replace('featured_post_date',pagination_page[0][3])
+                template = template.replace('featured_post_teaser_text',pagination_page[0][5][:int(frontpage_featured_teaser_length)])
+
+                for post in  pagination_page:
+                    template = template.replace('blog_roll',generate_blogroll_widget(pagination_page))
+                    template = template.replace('featured_post_widget',generate_featured_post_widget(pagination_page))
+                    template = replace_config_data(template)
+                
+                if index == 0:
+                    with open(os.path.join(os.getcwd(), 'site','index.html'), 'w') as indexPage:
+                        indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
+                        indexPage.close
+                        
+                else: 
+                    with open(os.path.join(os.getcwd(), 'site','page_'+str(index+1) +'.html'), 'w') as indexPage:
+                        indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
+                        indexPage.close
                 template_file.close
+
 
 def main():
     copy_theme_files()
     copy_images_from_cms_to_site()
     generate_post_pages()
-    generate_index_page()
+    paginated_posts = get_paginated_posts(get_blogroll_posts())
+    generate_pagination_pages(paginated_posts)
     optimize_images()
 
 if __name__ == "__main__":
