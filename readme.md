@@ -24,9 +24,28 @@ For configuration there are two relevant files:
 - cms/siteConfig.md for everything that is configured globally
 - THEMEFOLDER/themeConfig.md for everything that is specific to the theme like image dimensions and number of featured posts. 
 
+# Adapt to your own theme
+
+- Download HTML theme as normally inside the root folder of your repository
+- Add the CMS folder from this project to the root directory 
+- Inside the theme folder create a new one called templates with the following HTML files:
+ - blogroll_post.html (this is your main page blogroll single post)
+ - footer.html
+ - index.html
+ - post_featured.html
+ - recent_posts_sidebar.html
+ - related_posts.html
+ - single_post.html
+ - themeConfig.html
+
+For the most part you will use the files from your new theme here and place the needed variables inside. The following ones are available:
+- Anything in either themeConfig.md or cms/siteConfig.md will be auto-replaced if you put the name inside your html templates
+- #todo fill later
+
 # Upcoming features
 - ~~Make images as links possible~~ Done!
 - ~~Add theme specific configuration files~~ Done!
+- ~~Add pagination~~
 - implement new (free!) themes and adapt them for rapid prototyping - first one done!
 - Make image optimization and resizing configurable per theme
 - Add support for Markdown lists
