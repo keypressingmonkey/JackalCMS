@@ -212,7 +212,7 @@ def get_next_post(current_post_date):
     else:
         return(['/', 'Homepage', '', 'default.jpg', ''])
 
-def get_blogroll_posts():    
+def get_blogroll_posts(category=None):    
     all_posts = []
     
     for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
@@ -221,7 +221,11 @@ def get_blogroll_posts():
                 with open(os.path.join(root, file)) as f:
                     post_text = f.read()  # this way we get to separate frontmatter from post content
                     post = generate_post_from_Markdown(post_text)                    
-                    all_posts.append(post)
+                    if category:
+                        if category in post[7]:
+                            all_posts.append(post)
+                    else:
+                        all_posts.append(post)
         break
     sorted_list = sort_posts_by_date(all_posts)
     return sorted_list
@@ -290,9 +294,9 @@ def split_list_into_chunks(lst, n:int): #stolen from https://stackoverflow.com/q
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-def get_paginated_posts():    
+def get_paginated_posts(category=None):    
     all_pages = []
-    blogroll = sort_posts_by_date(get_blogroll_posts())
+    blogroll = sort_posts_by_date(get_blogroll_posts(category))
     batch_size = int(get_single_value_from_config('number_of_blog_posts_in_blogroll'))
     blogroll_split_into_chunks = list(split_list_into_chunks(blogroll,batch_size))
     for paginated_block in  blogroll_split_into_chunks:
@@ -346,6 +350,7 @@ def generate_post_pages():
                         blogroll = sort_posts_by_date(blogroll)
                         template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
                         template = replace_config_data(template)
+                        template = template.replace('tags_widget',generate_tags_widget(current_post))
 
                         newPostFileName = current_post_url
                         with open(os.path.join(os.getcwd(), 'site', newPostFileName), 'w') as newpost:
@@ -438,6 +443,66 @@ def generate_pagination_pages():
                         indexPage.close
                 template_file.close
 
+def get_all_categories():
+    categories = []
+    for post in get_blogroll_posts():
+        for category in post[7]:
+            if not category in categories:
+                categories.append(category)
+    return categories
+
+def generate_tags_widget(post):
+    #todo generate pagination buttons and numbers based on templates
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates','tags_widget.html'))and get_single_value_from_config('has_tags_widget')=="True":
+        with open(os.path.join(os.getcwd(), themefolder,'templates','tags_widget.html'),'r') as template_file:
+            post_tag_widget_template = template_file.read()
+            post_tags_widget = ''
+            for tag in post[7]:
+                post_tags_widget += post_tag_widget_template.replace('post_tag_name',tag).replace('post_tag_url',tag+'/page_1.html')
+            return post_tags_widget
+    else:
+        return ''
+
+def move_all_links_one_layer_up(template:str):
+    return template.replace('href="','href="../').replace('img src="','img src="../').replace('url(','url(../')
+
+def generate_category_pages():
+    global paginated_category_pages
+    paginated_category_pages = []
+    frontpage_featured_teaser_length = get_single_value_from_config('frontpage_featured_teaser_length')
+    categories = get_all_categories()
+    for category in categories:
+        pages = get_paginated_posts(category)
+        for index, pagination_page in enumerate(pages):
+            with open(os.path.join(os.getcwd(), themefolder,'templates','category_page_template.html'),'r') as template_file: #todo use extra category template here
+                template = template_file.read()
+            
+
+                template = template.replace('sidebar_component', generate_sidebar_widget(pagination_page))          
+                
+                template = template.replace('featured_post_url', pagination_page[0][0])
+                template = template.replace('featured_post_title', pagination_page[0][1])
+                template = template.replace('featured_post_subtitle', pagination_page[0][2])
+                template = template.replace('featured_post_image',pagination_page[0][3])
+                template = template.replace('featured_post_date',pagination_page[0][3])
+                template = template.replace('featured_post_teaser_text',pagination_page[0][5][:int(frontpage_featured_teaser_length)])
+
+                for post in  pagination_page:
+                    template = template.replace('blog_roll',generate_blogroll_widget(pagination_page))
+                    template = template.replace('featured_post_widget',generate_featured_post_widget(pagination_page))
+                    template = replace_config_data(template)
+                category_path = os.path.join(os.getcwd(), 'site',category)
+                if not os.path.exists(category_path):
+                    os.makedirs(category_path)
+
+                with open(os.path.join(category_path,'page_'+str(index+1) +'.html'), 'w') as indexPage:
+                    template = template.replace('pagination_widget',generate_pagination_widget(index,len(pages)))
+                    template = move_all_links_one_layer_up(template)
+                    paginated_category_pages.append(index+1)
+                    indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
+                    indexPage.close
+        template_file.close
+
 
 
 def main():
@@ -445,6 +510,7 @@ def main():
     copy_images_from_cms_to_site()
     generate_post_pages()
     generate_pagination_pages()
+    generate_category_pages()
     optimize_images()
 
 if __name__ == "__main__":
