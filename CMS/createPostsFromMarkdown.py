@@ -82,6 +82,7 @@ def generate_recent_posts_widget():
                 temp = temp.replace('recent_post_url', post[0])
                 temp = temp.replace('recent_post_title', post[1])
                 temp = temp.replace('recent_post_image', post[3])
+                temp = temp.replace('recent_post_date', post[4])
                 all_posts += temp
             return all_posts
     else:
@@ -231,6 +232,9 @@ def get_blogroll_posts(category=None):
     sorted_list = sort_posts_by_date(all_posts)
     return sorted_list
 
+def get_reading_time_for_text(text:str):
+    return round(len(text.split(' '))/180,0) #estimated 180 wpm reading speed according to da interwebs.
+
 def generate_blogroll_widget(paginated_posts):
     if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/blogroll_single_post_template.html')):
         with open(os.path.join(os.getcwd(), themefolder,'templates/blogroll_single_post_template.html'),'r') as template_file:
@@ -246,6 +250,7 @@ def generate_blogroll_widget(paginated_posts):
                 post_template = post_template.replace('blog_loop_post_image',post[3])
                 post_template = post_template.replace('blog_loop_post_date',post[4])
                 post_template = post_template.replace('blog_loop_post_teaser_text',convert_markdown_to_html(post[6][0:int(get_single_value_from_config('frontpage_teaser_length'))]+'......'))
+                post_template = post_template.replace('blog_loop_post_reading_time',str(get_reading_time_for_text(post[6])))
                 all_posts += post_template
             
             return all_posts
@@ -351,6 +356,7 @@ def generate_post_pages():
                         blogroll = sort_posts_by_date(blogroll)
                         template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
                         template = replace_config_data(template)
+                        template = template.replace('all_tags_widget',generate_tags_widget(None))
                         template = template.replace('tags_widget',generate_tags_widget(current_post))
 
                         newPostFileName = current_post_url
@@ -364,7 +370,7 @@ def generate_pagination_widget(current_page_index:int,total_pages:int):
     if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates','pagination_widget_template.html'))and get_single_value_from_config('has_pagination')=="True":
         with open(os.path.join(os.getcwd(), themefolder,'templates','pagination_widget_template.html'),'r') as template_file:
             pagination_widget_template = template_file.read()
-
+            #todo implement  previous_page_url and next_page_url
             #todo make more generic, this right now works specifically with 3 previous/next posts
             pagination_previous_page_1_number = '1'
             pagination_previous_page_2_number = '2'if total_pages >1 else '...'
@@ -430,7 +436,7 @@ def generate_pagination_pages():
                     template = replace_config_data(template)
                 
                 if index == 0:
-                    with open(os.path.join(os.getcwd(), 'site','index_template.html'), 'w') as indexPage:
+                    with open(os.path.join(os.getcwd(), 'site','index.html'), 'w') as indexPage:
                         paginated_pages.append(index)
                         template = template.replace('pagination_widget',generate_pagination_widget(index+1,len(pages)))
                         indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
@@ -452,15 +458,21 @@ def get_all_categories():
                 categories.append(category)
     return categories
 
-def generate_tags_widget(post):
+def generate_tags_widget(post=None):
     #todo generate pagination buttons and numbers based on templates
     if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates','tags_widget.html'))and get_single_value_from_config('has_tags_widget')=="True":
         with open(os.path.join(os.getcwd(), themefolder,'templates','tags_widget.html'),'r') as template_file:
             post_tag_widget_template = template_file.read()
             post_tags_widget = ''
-            for tag in post[7]:
-                post_tags_widget += post_tag_widget_template.replace('post_tag_name',tag).replace('post_tag_url',tag+'/page_1.html')
-            return post_tags_widget
+            if post:
+                for tag in post[7]:
+                    post_tags_widget += post_tag_widget_template.replace('post_tag_name',tag).replace('post_tag_url',tag+'/page_1.html')
+                return post_tags_widget
+            else:
+                for tag in get_all_categories():
+                    post_tags_widget += post_tag_widget_template.replace('post_tag_name',tag).replace('post_tag_url',tag+'/page_1.html')
+                return post_tags_widget
+
     else:
         return ''
 

@@ -1,7 +1,7 @@
 ---
 author_name: "Billy The Kid"
 author_bio: "Just a regular dude with a big ass dick"
-author_image_name: "owner.jpg"
+author_image: "author_image.jpg"
 instagram_profile_url: "https://instagram.com/@yourname"
 twitter_profile_url: "https://twitter.com/@yourname"
 youtube_profile_url: "https://YouTube.com/@yourname"
@@ -21,5 +21,5 @@ contact_address_place: "your contact_address_place"
 contact_address_area_code: "your contact_address_area_code"
 contact_phone_number: "your contact_phone_number"
 contact_email_address: "your contact_email_address"
-themefolder: "arwyn"
+themefolder: "readit"
 ---
