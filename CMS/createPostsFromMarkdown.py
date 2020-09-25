@@ -88,7 +88,7 @@ def generate_recent_posts_widget():
     else:
         return ''
 
-def generate_sidebar_widget(blogroll):    
+def generate_sidebar_widget():    
     if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/sidebar_template.html')):
         with open(os.path.join(os.getcwd(), themefolder,'templates/sidebar_template.html'),'r') as template_file:
             sidebar_widget_template = template_file.read()
@@ -354,10 +354,11 @@ def generate_post_pages():
                         template = template.replace('related_posts_widget',related_posts_widget)
                         blogroll = get_blogroll_posts()
                         blogroll = sort_posts_by_date(blogroll)
-                        template = template.replace('sidebar_component', generate_sidebar_widget(blogroll))
+                        template = template.replace('sidebar_component', generate_sidebar_widget())
                         template = replace_config_data(template)
                         template = template.replace('all_tags_widget',generate_tags_widget(None))
                         template = template.replace('tags_widget',generate_tags_widget(current_post))
+                        template = template.replace('sidebar_recent_post_component',generate_recent_posts_widget())
 
                         newPostFileName = current_post_url
                         with open(os.path.join(os.getcwd(), 'site', newPostFileName), 'w') as newpost:
@@ -421,7 +422,7 @@ def generate_pagination_pages():
                 template = template_file.read()
             
 
-                template = template.replace('sidebar_component', generate_sidebar_widget(pagination_page))          
+                template = template.replace('sidebar_component', generate_sidebar_widget())          
                 
                 template = template.replace('featured_post_url', pagination_page[0][0])
                 template = template.replace('featured_post_title', pagination_page[0][1])
@@ -429,6 +430,15 @@ def generate_pagination_pages():
                 template = template.replace('featured_post_image',pagination_page[0][3])
                 template = template.replace('featured_post_date',pagination_page[0][3])
                 template = template.replace('featured_post_teaser_text',pagination_page[0][5][:int(frontpage_featured_teaser_length)])
+                template = template.replace('sidebar_recent_post_component',generate_recent_posts_widget())
+                if index < len(pages):
+                    template = template.replace('next_page_url','/page_'+str(index+2) +'.html')
+                else:
+                    template = template.replace('next_page_url','')
+                if index > 1:
+                    template = template.replace('previous_page_url','/page_'+str(index) +'.html')
+                else:
+                    template = template.replace('next_page_url','')
 
                 for post in  pagination_page:
                     template = template.replace('blog_roll',generate_blogroll_widget(pagination_page))
@@ -477,7 +487,7 @@ def generate_tags_widget(post=None):
         return ''
 
 def move_all_links_one_layer_up(template:str):
-    return template.replace('href="','href="../').replace('img src="','img src="../').replace('url(','url(../')
+    return template.replace('href="','href="../').replace('img src="','img src="../').replace('script src="','script src="../').replace('url(','url(../')
 
 def generate_category_pages():
     global paginated_category_pages
@@ -487,11 +497,14 @@ def generate_category_pages():
     for category in categories:
         pages = get_paginated_posts(category)
         for index, pagination_page in enumerate(pages):
-            with open(os.path.join(os.getcwd(), themefolder,'templates','category_page_template.html'),'r') as template_file: #todo use extra category template here
+            category_template = os.path.join(os.getcwd(), themefolder,'templates','category_page_template.html')
+            if not os.path.exists(category_template):
+                category_template = os.path.join(os.getcwd(), themefolder,'templates','index_template.html')
+            with open(category_template,'r') as template_file: 
                 template = template_file.read()
             
 
-                template = template.replace('sidebar_component', generate_sidebar_widget(pagination_page))          
+                template = template.replace('sidebar_component', generate_sidebar_widget())          
                 
                 template = template.replace('featured_post_url', pagination_page[0][0])
                 template = template.replace('featured_post_title', pagination_page[0][1])
@@ -499,6 +512,7 @@ def generate_category_pages():
                 template = template.replace('featured_post_image',pagination_page[0][3])
                 template = template.replace('featured_post_date',pagination_page[0][3])
                 template = template.replace('featured_post_teaser_text',pagination_page[0][5][:int(frontpage_featured_teaser_length)])
+                template = template.replace('sidebar_recent_post_component',generate_recent_posts_widget())
 
                 for post in  pagination_page:
                     template = template.replace('blog_roll',generate_blogroll_widget(pagination_page))
@@ -507,6 +521,14 @@ def generate_category_pages():
                 category_path = os.path.join(os.getcwd(), 'site',category)
                 if not os.path.exists(category_path):
                     os.makedirs(category_path)
+                if index < len(pages):
+                    template = template.replace('next_page_url',category+'/page_'+str(index+2) +'.html')
+                else:
+                    template = template.replace('next_page_url','')
+                if index > 1:
+                    template = template.replace('previous_page_url',category+'/page_'+str(index) +'.html')
+                else:
+                    template = template.replace('next_page_url','')
 
                 with open(os.path.join(category_path,'page_'+str(index+1) +'.html'), 'w') as indexPage:
                     template = template.replace('pagination_widget',generate_pagination_widget(index,len(pages)))
@@ -521,9 +543,9 @@ def generate_category_pages():
 def main():
     copy_theme_files()
     copy_images_from_cms_to_site()
-    generate_post_pages()
     generate_pagination_pages()
     generate_category_pages()
+    generate_post_pages()
     optimize_images()
 
 if __name__ == "__main__":
