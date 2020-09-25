@@ -270,7 +270,7 @@ def generate_featured_post_widget(paginated_posts):
 
 def get_related_posts(current_post):    
     all_posts = []
-
+    number_of_related_posts = int(get_single_value_from_config('number_of_related_blog_posts_in_content_column'))
     for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
         for file in files:
             if file.endswith('.md') or file.endswith('.markdown'):
@@ -283,7 +283,7 @@ def get_related_posts(current_post):
                                 if post_category == current_post_category and not post in all_posts:
                                     all_posts.append(post)
         break
-    return random.sample(all_posts,3)
+    return random.sample(all_posts,min(number_of_related_posts,len(all_posts)))
 
 def split_list_into_chunks(lst, n:int): #stolen from https://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks
     """Yield successive n-sized chunks from lst."""
