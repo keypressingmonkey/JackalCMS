@@ -37,7 +37,7 @@ def copy_theme_files():
     for config_value in config_values:
         global themefolder 
         if config_value[0] == 'themefolder':
-            themefolder = config_value[1]
+            themefolder = 'themes/'+config_value[1]
 
     themefolder = os.path.join(os.getcwd(),themefolder)
     deploy_folder = os.path.join(os.getcwd(),'site')
@@ -136,7 +136,7 @@ def load_values_from_config():
                 config_values.append([name, value])
                 for config_value in config_values:
                     if config_value[0] == 'themefolder':
-                        themefolder = os.path.join(os.getcwd(),config_value[1])
+                        themefolder = os.path.join(os.getcwd(),'themes',config_value[1])
 
     with open(os.path.join(os.getcwd(), themefolder,'templates','themeConfig.md')) as theme_config:
         for line in theme_config.readlines():
