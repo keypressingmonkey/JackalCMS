@@ -114,7 +114,8 @@ def generate_post_from_Markdown(post_text):
     subtitle = re.search(r'(\nsubtitle: ")(.*?)(")', frontmatter, re.MULTILINE).group(2)
     image = re.search(r'(\nimage: ")(.*?)(")',frontmatter).group(2)
     date = re.search(r'(\ndate: ")(.*?)(")',frontmatter, re.MULTILINE).group(2)
-    return [title.replace(' ', '_')+'.html', title, subtitle, image, date,content,teaser]
+    categories = re.search(r'(\ncategories: ")(.*?)(")',frontmatter, re.MULTILINE).group(2).split(',')
+    return [title.replace(' ', '_')+'.html', title, subtitle, image, date,content,teaser,categories]
 
 def get_frontmatter_values(frontmatter:str):
     frontmattervalues = []
@@ -267,7 +268,7 @@ def generate_featured_post_widget(paginated_posts):
     else:
         return ''
 
-def get_related_posts(current_post_title):    
+def get_related_posts(current_post):    
     all_posts = []
 
     for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
@@ -276,8 +277,11 @@ def get_related_posts(current_post_title):
                 with open(os.path.join(root, file)) as f:
                     post_text = f.read()  # this way we get to separate frontmatter from post content
                     post = generate_post_from_Markdown(post_text)                    
-                    if not post[1] == current_post_title:
-                        all_posts.append(post)
+                    if not post[1] == current_post[1]:
+                        for current_post_category in current_post[7]:
+                            for post_category in post[7]:
+                                if post_category == current_post_category and not post in all_posts:
+                                    all_posts.append(post)
         break
     return random.sample(all_posts,3)
 
@@ -302,13 +306,13 @@ def generate_post_pages():
             if file.endswith('.md') or file.endswith('.markdown'):
                 with open(os.path.join(root, file)) as template:
                     post_text = template.read()  # this way we get to separate frontmatter from post content
-                    post = generate_post_from_Markdown(post_text)     
-                    current_post_url = post[0]
-                    current_post_title = post[1]
-                    current_post_subtitle = post[2]
-                    current_post_image = post[3]
-                    current_post_date = post[4]
-                    current_post_content = convert_markdown_to_html(post[5])
+                    current_post = generate_post_from_Markdown(post_text)     
+                    current_post_url = current_post[0]
+                    current_post_title = current_post[1]
+                    current_post_subtitle = current_post[2]
+                    current_post_image = current_post[3]
+                    current_post_date = current_post[4]
+                    current_post_content = convert_markdown_to_html(current_post[5])
                 
                     previous_post = get_previous_post(current_post_date)
                     previous_post_url = previous_post[0]
@@ -326,7 +330,7 @@ def generate_post_pages():
                     #related posts 
 
                     with open(os.path.join(os.path.join(os.getcwd(), themefolder,'templates','single_post.html')), 'r') as template_file:
-                        related_posts = get_related_posts(current_post_title)                
+                        related_posts = get_related_posts(current_post)                
                         template = template_file.read()
                         template = template.replace('post_title', current_post_title)
                         template = template.replace('post_subtitle', current_post_subtitle)
@@ -336,7 +340,7 @@ def generate_post_pages():
                         template = template.replace('previous_post_url', previous_post_url)
                         template = template.replace('next_post_url', next_post_url)
                         template = template.replace('post_content', current_post_content)
-                        related_posts_widget = generate_related_posts_widget(get_related_posts(current_post_title))
+                        related_posts_widget = generate_related_posts_widget(related_posts)
                         template = template.replace('related_posts_widget',related_posts_widget)
                         blogroll = get_blogroll_posts()
                         blogroll = sort_posts_by_date(blogroll)
@@ -351,7 +355,7 @@ def generate_post_pages():
         break
 def generate_pagination_widget(current_page_index:int,total_pages:int):
     #todo generate pagination buttons and numbers based on templates
-    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates','pagination.html')):
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates','pagination.html'))and get_single_value_from_config('has_pagination')=="True":
         with open(os.path.join(os.getcwd(), themefolder,'templates','pagination.html'),'r') as template_file:
             pagination_widget_template = template_file.read()
 
@@ -386,6 +390,8 @@ def generate_pagination_widget(current_page_index:int,total_pages:int):
             pagination_widget_template = pagination_widget_template.replace('pagination_next_page_3_url',pagination_next_page_3_url)
             pagination_widget_template = pagination_widget_template.replace('pagination_next_page_url',pagination_next_page_url)
             return pagination_widget_template
+    else:
+        return ''
 
 def sort_posts_by_date(posts,descending=True):
     if descending:
