@@ -71,8 +71,8 @@ def copy_images_from_cms_to_site():
             shutil.copy (src_file, dst_dir)
 
 def generate_recent_posts_widget():
-    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/recent_posts_sidebar.html')):
-        with open(os.path.join(os.getcwd(), themefolder,'templates/recent_posts_sidebar.html'),'r') as template_file:
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/recent_posts_sidebar_template.html')):
+        with open(os.path.join(os.getcwd(), themefolder,'templates/recent_posts_sidebar_template.html'),'r') as template_file:
             recent_posts_template = template_file.read()
             all_posts = ''
             blogroll = sort_posts_by_date(get_blogroll_posts())
@@ -88,23 +88,24 @@ def generate_recent_posts_widget():
         return ''
 
 def generate_sidebar_widget(blogroll):    
-    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/sidebar.html')):
-        with open(os.path.join(os.getcwd(), themefolder,'templates/sidebar.html'),'r') as template_file:
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/sidebar_template.html')):
+        with open(os.path.join(os.getcwd(), themefolder,'templates/sidebar_template.html'),'r') as template_file:
             sidebar_widget_template = template_file.read()
             return sidebar_widget_template.replace('sidebar_recent_post_component',generate_recent_posts_widget())
 
 def generate_related_posts_widget(related_posts):
-    with open(os.path.join(os.getcwd(), themefolder,'templates/related_posts.html'),'r') as template_file:
-        post_template = template_file.read()
-        all_posts = ''
-        for post in related_posts:
-            temp = post_template
-            temp = temp.replace('blog_post_related_post_url', post[0])
-            temp = temp.replace('blog_post_related_post_title', post[1])
-            temp = temp.replace('blog_post_related_post_s', post[2])
-            temp = temp.replace('blog_post_related_post_image', post[3])
-            all_posts += temp
-        return all_posts
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/related_single_post_template.html')):
+        with open(os.path.join(os.getcwd(), themefolder,'templates/related_single_post_template.html'),'r') as template_file:
+            post_template = template_file.read()
+            all_posts = ''
+            for post in related_posts:
+                temp = post_template
+                temp = temp.replace('blog_post_related_post_url', post[0])
+                temp = temp.replace('blog_post_related_post_title', post[1])
+                temp = temp.replace('blog_post_related_post_s', post[2])
+                temp = temp.replace('blog_post_related_post_image', post[3])
+                all_posts += temp
+            return all_posts
 
 def generate_post_from_Markdown(post_text):    
     frontmatter = re.match(r'(---)((.|\n)*?)(---)', post_text).group(2)
@@ -231,8 +232,8 @@ def get_blogroll_posts(category=None):
     return sorted_list
 
 def generate_blogroll_widget(paginated_posts):
-    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/blogroll_post.html')):
-        with open(os.path.join(os.getcwd(), themefolder,'templates/blogroll_post.html'),'r') as template_file:
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/blogroll_single_post_template.html')):
+        with open(os.path.join(os.getcwd(), themefolder,'templates/blogroll_single_post_template.html'),'r') as template_file:
             recent_posts_template = template_file.read()
             all_posts = ''
             number_of_featured_posts = int(get_single_value_from_config('number_of_featured_posts'))
@@ -252,8 +253,8 @@ def generate_blogroll_widget(paginated_posts):
         return ''
 
 def generate_featured_post_widget(paginated_posts):
-    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/post_featured.html')):
-        with open(os.path.join(os.getcwd(), themefolder,'templates/post_featured.html'),'r') as template_file:
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates/featured_post_template.html')):
+        with open(os.path.join(os.getcwd(), themefolder,'templates/featured_post_template.html'),'r') as template_file:
             recent_posts_template = template_file.read()
             all_posts = ''
             number_of_featured_posts = int(get_single_value_from_config('number_of_featured_posts'))
@@ -360,8 +361,8 @@ def generate_post_pages():
         break
 def generate_pagination_widget(current_page_index:int,total_pages:int):
     #todo generate pagination buttons and numbers based on templates
-    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates','pagination.html'))and get_single_value_from_config('has_pagination')=="True":
-        with open(os.path.join(os.getcwd(), themefolder,'templates','pagination.html'),'r') as template_file:
+    if os.path.isfile(os.path.join(os.getcwd(), themefolder,'templates','pagination_widget_template.html'))and get_single_value_from_config('has_pagination')=="True":
+        with open(os.path.join(os.getcwd(), themefolder,'templates','pagination_widget_template.html'),'r') as template_file:
             pagination_widget_template = template_file.read()
 
             #todo make more generic, this right now works specifically with 3 previous/next posts
@@ -410,7 +411,7 @@ def generate_pagination_pages():
         frontpage_featured_teaser_length = get_single_value_from_config('frontpage_featured_teaser_length')
         pages = get_paginated_posts()
         for index, pagination_page in enumerate(pages):
-            with open(os.path.join(os.getcwd(), themefolder,'templates','index.html'),'r') as template_file:
+            with open(os.path.join(os.getcwd(), themefolder,'templates','index_template.html'),'r') as template_file:
                 template = template_file.read()
             
 
@@ -429,7 +430,7 @@ def generate_pagination_pages():
                     template = replace_config_data(template)
                 
                 if index == 0:
-                    with open(os.path.join(os.getcwd(), 'site','index.html'), 'w') as indexPage:
+                    with open(os.path.join(os.getcwd(), 'site','index_template.html'), 'w') as indexPage:
                         paginated_pages.append(index)
                         template = template.replace('pagination_widget',generate_pagination_widget(index+1,len(pages)))
                         indexPage.write(template.replace('.md','.html').replace('.markdown','.html'))
