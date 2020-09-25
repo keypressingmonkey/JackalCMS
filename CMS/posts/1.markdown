@@ -3,6 +3,7 @@ title: "Page Title"
 subtitle: "page subtitle"
 image: "blog_loop_post_1_image.jpg"     
 date: "2015-01-21"
+categories: "blog,python,tag with spaces,tag_with_underscores"
 ---
 beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. beginning paragraph, this will be the teaser text. 
 # heading 2
