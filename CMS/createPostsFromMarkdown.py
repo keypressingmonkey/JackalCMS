@@ -161,13 +161,14 @@ def optimize_images():
         for image in file:
             if (image.endswith('.jpg') or image.endswith('.png')):
                 original_image = Image.open(os.path.join(root,image))
-             
-                img = resize_and_optimize(original_image,image,'blogroll',760,True,80)
-                img = resize_and_optimize(original_image,image,'featured',760,True,80)
-                img = resize_and_optimize(original_image,image,'thumbs',80,True,80)
-                img = resize_and_optimize(original_image,image,'related',214,True,80)
-                img = resize_and_optimize(original_image,image,'sidebar_large',350,True,80)
-                img = resize_and_optimize(original_image,image,'130px',130,True,80)                
+                for image_width in get_single_value_from_config('image_widths').split(','):
+                    img = resize_and_optimize(original_image,image,str(image_width),int(image_width),True,80)
+                    # img = resize_and_optimize(original_image,image,'blogroll',760,True,80)
+                    # img = resize_and_optimize(original_image,image,'featured',760,True,80)
+                    # img = resize_and_optimize(original_image,image,'thumbs',80,True,80)
+                    # img = resize_and_optimize(original_image,image,'related',214,True,80)
+                    # img = resize_and_optimize(original_image,image,'sidebar_large',350,True,80)
+                    # img = resize_and_optimize(original_image,image,'130px',130,True,80)                
         break #this break makes the os.walk non recursive so we don't optimize the optimized (quid opimizos optimizadan)
 
 def convert_markdown_to_html(value):
