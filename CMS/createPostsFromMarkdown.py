@@ -177,18 +177,11 @@ def convert_markdown_to_html(value):
 
 def get_previous_post(current_post_date):
     all_previous_posts = []
-
-    for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
-        for file in files:
-            if file.endswith('.md') or file.endswith('.markdown'):
-                with open(os.path.join(root, file)) as f:
-                    post_text = f.read() 
-                    post = generate_post_from_Markdown(post_text)
-                    date = dt.strptime(post[4], "%Y-%m-%d")
-                    master_post_date = dt.strptime(current_post_date, "%Y-%m-%d")
-                    if date < master_post_date:
-                        all_previous_posts.append(post)
-        break
+    for post in get_blogroll_posts():        
+        date = dt.strptime(post[4], "%Y-%m-%d")
+        master_post_date = dt.strptime(current_post_date, "%Y-%m-%d")
+        if date < master_post_date:
+            all_previous_posts.append(post)
     if all_previous_posts:
         # this sorts by date and returns the highest, aka the previous post
         return sort_posts_by_date(all_previous_posts,True)[0]
@@ -197,18 +190,13 @@ def get_previous_post(current_post_date):
 
 def get_next_post(current_post_date):
     all_next_posts = []
+    
 
-    for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
-        for file in files:
-            if file.endswith('.md') or file.endswith('.markdown'):
-                with open(os.path.join(root, file)) as f:
-                    post_text = f.read()  # this way we get to separate frontmatter from post content
-                    post = generate_post_from_Markdown(post_text)
-                    date = dt.strptime(post[4], "%Y-%m-%d")
-                    master_post_date = dt.strptime(current_post_date, "%Y-%m-%d")
-                    if date > master_post_date:
-                        all_next_posts.append(post)
-        break
+    for post in get_blogroll_posts():        
+        date = dt.strptime(post[4], "%Y-%m-%d")
+        master_post_date = dt.strptime(current_post_date, "%Y-%m-%d")
+        if date > master_post_date:
+            all_next_posts.append(post)
     if all_next_posts:
         # this sorts by date and returns the lowest with a higher date than the mainw, aka the next post
         return sort_posts_by_date(all_next_posts,False)[0]
@@ -223,12 +211,14 @@ def get_blogroll_posts(category=None):
             if file.endswith('.md') or file.endswith('.markdown'):
                 with open(os.path.join(root, file)) as f:
                     post_text = f.read()  # this way we get to separate frontmatter from post content
-                    post = generate_post_from_Markdown(post_text)                    
-                    if category:
-                        if category in post[7]:
+                    post = generate_post_from_Markdown(post_text)      
+                    post_date = dt.strptime(post[4], "%Y-%m-%d")
+                    if post_date < dt.today():
+                        if category:
+                            if category in post[7]:
+                                all_posts.append(post)
+                        else:
                             all_posts.append(post)
-                    else:
-                        all_posts.append(post)
         break
     sorted_list = sort_posts_by_date(all_posts)
     return sorted_list
@@ -282,18 +272,12 @@ def generate_featured_post_widget(paginated_posts):
 def get_related_posts(current_post):    
     all_posts = []
     number_of_related_posts = int(get_single_value_from_config('number_of_related_blog_posts_in_content_column'))
-    for root,dirs,files in os.walk(os.path.join(os.getcwd(),'cms','posts')):
-        for file in files:
-            if file.endswith('.md') or file.endswith('.markdown'):
-                with open(os.path.join(root, file)) as f:
-                    post_text = f.read()  # this way we get to separate frontmatter from post content
-                    post = generate_post_from_Markdown(post_text)                    
-                    if not post[1] == current_post[1]:
-                        for current_post_category in current_post[7]:
-                            for post_category in post[7]:
-                                if post_category == current_post_category and not post in all_posts:
-                                    all_posts.append(post)
-        break
+    for post in get_blogroll_posts():
+        if not post[1] == current_post[1]:
+            for current_post_category in current_post[7]:
+                for post_category in post[7]:
+                    if post_category == current_post_category and not post in all_posts:
+                        all_posts.append(post)
     return random.sample(all_posts,min(number_of_related_posts,len(all_posts)))
 
 def split_list_into_chunks(lst, n:int): #stolen from https://stackoverflow.com/questions/312443/how-do-you-split-a-list-into-evenly-sized-chunks
