@@ -7,4 +7,5 @@ number_of_blog_posts_in_blogroll: "10"
 number_of_recent_blog_posts_in_sidebar: "4"
 number_of_related_blog_posts_in_content_column: "3"
 read_more_link_text: "Fully Story"
+image_widths: "760,80,214,130,350"
 ---

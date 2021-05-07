@@ -10,4 +10,5 @@ number_of_related_blog_posts_in_content_column: "3"
 has_tags_widget: "True"
 website_teaser_text: "This is the opening quote or description of your site's mission or whatever"
 homepage_hero_image: "main_page_background.jpg"
+image_widths: "760,80,214,130,350"
 ---
