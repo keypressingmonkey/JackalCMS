@@ -1,7 +1,7 @@
 ---
 title: "Page Title4"
 subtitle: "page subtitle"
-image: "blog_loop_post_2_image.jpg"
+image: "blog_loop_post_1_image.jpg"
 date: "2015-01-24"
 categories: "blog,python,tag with spaces,tag_with_underscores"
 ---
