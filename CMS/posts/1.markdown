@@ -13,8 +13,13 @@ This is all your test content
 ## heading 3
 This is all your test content [this is a regular link](https://github.com/)
 # heading 2
-This is all your test content ![imagealt](/images/insta-01.jpg)
+This is all your test content 
+
+![imagealt](images/featured/featured_post_1_image.jpg)
+
 # heading 2
-This is all your test content [![imagealt](/images/insta-01.jpg)](https://github.com)
+This is all your test content 
+
+[![imagealt](images/featured/featured_post_1_image.jpg)](https://github.com)
 
 Give your mind some time to rest and 
